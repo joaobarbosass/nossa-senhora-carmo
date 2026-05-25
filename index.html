@@ -1,16 +1,37 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-br">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Document</title>
+
+        <!-- Importa estilos globais e específicos da página -->
+        <link rel="stylesheet" href="css/layout/global.css" />
+        <link rel="stylesheet" href="css/layout/header.css" />
+        <link rel="stylesheet" href="css/layout/footer.css" />
+
+        <link rel="stylesheet" href="css/body/body-principal.css" />
+        <link
+            rel="shortcut icon"
+            href="assets/icons/favicon.ico"
+            type="image/x-icon"
+        />
+        <title>Paróquia N. Sra. Carmo</title>
     </head>
     <body>
-        <main>
-            <div class="page-content">
-                <main></main>
-                <footer></footer>
-            </div>
-        </main>
+        <!-- Header -->
+        <div id="header-container"></div>
+
+        <!-- Conteúdo da página -->
+        <main class="page-content">... ... ...</main>
+
+        <div id="footer-container"></div>
+
+        <!-- Importa componentes(Header/Footer) -->
+        <script src="./js/components.js"></script>
+
+        <!-- Importa scripts -->
+        <script src="./js/carousel.js"></script>
+        <script src="./js/fade.js"></script>
+        <script src="./js/main.js"></script>
     </body>
 </html>

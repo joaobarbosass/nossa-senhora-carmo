@@ -44,11 +44,6 @@ if (menuClose) {
 /* Clique/touch fora do menu fecha */
 overlay.addEventListener("click", closeMenu);
 
-/* Fecha ao redimensionar para desktop */
-window.addEventListener("resize", () => {
-    if (window.innerWidth > 820) closeMenu();
-});
-
 /* =============================================
    LINKS — fechar ao clicar
    ============================================= */
