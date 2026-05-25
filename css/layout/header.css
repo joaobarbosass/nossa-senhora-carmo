@@ -7,14 +7,19 @@ header {
     position: fixed;
     top: 0;
     left: 0;
-    backdrop-filter: blur(10px);
     background: #624235;
-    z-index: 1000;
+    z-index: 1250;
     padding: 0 10px;
 
     transform: translateY(0);
-    transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+        transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.35s ease;
     will-change: transform;
+}
+
+body.menu-open header {
+    filter: blur(1px);
 }
 
 header.header-hidden {
@@ -31,35 +36,39 @@ header.header-hidden {
 /* ── HAMBURGUER — sempre visível ── */
 
 .menu-toggle {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     width: 30px;
-    height: 22px;
+    height: 24px;
     position: relative;
     background: none;
     border: none;
     cursor: pointer;
     margin-right: 10px;
-    z-index: 1001;
+    z-index: 1251;
+    gap: 5px;
+    padding: 0;
 }
 
 .menu-toggle span {
-    position: absolute;
+    display: block;
     width: 100%;
     height: 3px;
     background: #f1e0dc;
-    border-radius: 2px;
-    left: 0;
-    transition: opacity 0.2s ease;
+    border-radius: 1.5px;
+    transition: all 0.3s ease;
 }
 
 .menu-toggle span:nth-child(1) {
-    top: 0;
+    width: 100%;
 }
 .menu-toggle span:nth-child(2) {
-    top: 9px;
+    width: 100%;
 }
 .menu-toggle span:nth-child(3) {
-    top: 18px;
+    width: 100%;
 }
 
 /* Esconde o toggle enquanto menu está aberto (botão close assume o papel) */
@@ -78,7 +87,7 @@ body.menu-open .menu-toggle {
     height: 100dvh;
 
     background: rgba(0, 0, 0, 0);
-    z-index: 1999;
+    z-index: 1500;
 
     transition: opacity 0.35s ease;
 
@@ -88,7 +97,7 @@ body.menu-open .menu-toggle {
 
 .menu-overlay.active {
     opacity: 1;
-    pointer-events: auto;
+    pointer-events: none;
     background: rgba(0, 0, 0, 0.45);
 }
 
@@ -127,7 +136,7 @@ body.menu-open {
 
     transform: translateX(100%);
     opacity: 0;
-    pointer-events: none;
+    pointer-events: auto;
     will-change: transform;
 
     transition:
@@ -139,6 +148,10 @@ body.menu-open {
     overflow-x: hidden;
     padding-top: 20px;
     box-sizing: border-box;
+
+    /* Garante que o menu não sofre com blur/escuro */
+    filter: none !important;
+    backdrop-filter: none !important;
 }
 
 .links_header.active {
@@ -164,7 +177,7 @@ body.menu-open {
     border-radius: 8px;
 
     color: #f1e0dc;
-    cursor: pointer;
+    cursor: pointer !important;
 
     transition:
         background 0.3s ease,
@@ -180,6 +193,12 @@ body.menu-open {
 
 .menu-close span {
     font-size: 24px;
+    font-weight: 300;
+    font-variation-settings:
+        "FILL" 1,
+        "wght" 300,
+        "GRAD" 0,
+        "opsz" 24;
 }
 
 /* ── LISTA ── */

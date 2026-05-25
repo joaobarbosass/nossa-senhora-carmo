@@ -42,7 +42,16 @@ if (menuClose) {
 }
 
 /* Clique/touch fora do menu fecha */
-overlay.addEventListener("click", closeMenu);
+document.addEventListener("click", (e) => {
+    const isMenuOpen = nav.classList.contains("active");
+    const clickedMenu = nav.contains(e.target);
+    const clickedToggle = toggle.contains(e.target);
+    const clickedClose = menuClose && menuClose.contains(e.target);
+
+    if (isMenuOpen && !clickedMenu && !clickedToggle) {
+        closeMenu();
+    }
+});
 
 /* =============================================
    LINKS — fechar ao clicar
