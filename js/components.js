@@ -9,7 +9,10 @@ async function loadComponent(id, file) {
     container.innerHTML = html;
 }
 
-const isInPages = window.location.pathname.includes("/pages/");
+const path = window.location.pathname;
+
+const isInPages = path.includes("/pages/") || path.includes("\\pages\\");
+
 const basePath = isInPages ? "../" : "./";
 
 async function init() {
@@ -73,7 +76,7 @@ async function init() {
 
         const show = pageType === "all" || pageType === currentPageType;
 
-        item.style.display = show ? "block" : "none";
+        item.hidden = !show;
     });
 
     /* =========================
@@ -82,23 +85,24 @@ async function init() {
 
     const visibleItems = Array.from(
         document.querySelectorAll(".links_header ul li"),
-    ).filter((item) => {
-        return window.getComputedStyle(item).display !== "none";
-    });
+    ).filter((item) => !item.hidden);
 
     visibleItems.forEach((item, index) => {
-        item.style.transitionDelay = `${index * 0.08}s`;
+        item.style.setProperty("--delay", `${index * 0.08}s`);
     });
 
     /* =========================
        MENU JS
     ========================= */
 
-    const menuScript = document.createElement("script");
+    if (!document.querySelector("[data-menu-script]")) {
+        const menuScript = document.createElement("script");
 
-    menuScript.src = `${basePath}js/menu.js`;
+        menuScript.src = `${basePath}js/menu.js`;
+        menuScript.dataset.menuScript = "true";
 
-    document.body.appendChild(menuScript);
+        document.body.appendChild(menuScript);
+    }
 }
 
 init();

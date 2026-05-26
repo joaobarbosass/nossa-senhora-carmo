@@ -20,6 +20,7 @@ header {
 
 body.menu-open header {
     filter: blur(1px);
+    opacity: 0.95;
 }
 
 header.header-hidden {
@@ -101,13 +102,16 @@ body.menu-open .menu-toggle {
 }
 
 .page-content {
-    filter: blur(0px);
-    transition: filter 0.35s ease;
+    opacity: 1;
+    transform: scale(1);
+    transition:
+        filter 0.35s ease,
+        opacity 0.35s ease;
 }
 
 body.menu-open .page-content {
     filter: blur(1px);
-    pointer-events: none;
+    opacity: 0.9;
 }
 
 /* ── SCROLL LOCK ── */
@@ -136,8 +140,8 @@ body.menu-open {
 
     transform: translateX(100%);
     opacity: 0;
-    pointer-events: auto;
-    will-change: transform;
+    pointer-events: none;
+    will-change: transform, opacity;
 
     transition:
         transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
@@ -148,6 +152,8 @@ body.menu-open {
     overflow-x: hidden;
     padding-top: 20px;
     box-sizing: border-box;
+    contain: layout style paint;
+    box-shadow: -12px 0 30px rgba(0, 0, 0, 0.35);
 }
 
 .links_header.active {
@@ -216,8 +222,8 @@ body.menu-open {
     transform: translateX(20px);
 
     transition:
-        opacity 0.45s ease,
-        transform 0.45s ease,
+        opacity 0.45s ease var(--delay, 0s),
+        transform 0.45s ease var(--delay, 0s),
         background 0.3s ease;
 
     position: relative;
@@ -292,13 +298,17 @@ body.menu-open {
 /* ── ANIMAÇÃO CASCATA ── */
 
 /* itens ocultos por padrão para evitar flash antes do JS rodar */
-.links_header ul li[data-page] {
-    display: none;
+[hidden] {
+    display: none !important;
 }
 
 .links_header.active ul li {
     opacity: 1;
     transform: translateX(0);
+}
+
+.links_header.no-transition ul li {
+    transition: background 0.3s ease !important;
 }
 
 /* ── BOTÃO CTA ── */

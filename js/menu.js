@@ -13,15 +13,33 @@ const overlay = document.querySelector(".menu-overlay");
    ============================================= */
 
 function openMenu() {
+    // reativa transições
+    nav.classList.remove("no-transition");
+
     nav.classList.add("active");
+
     overlay?.classList.add("active");
+
     document.body.classList.add("menu-open");
 }
 
 function closeMenu() {
+    // remove delays/transições ao fechar
+    nav.classList.add("no-transition");
+
     nav.classList.remove("active");
+
     overlay?.classList.remove("active");
+
     document.body.classList.remove("menu-open");
+
+    // força repaint
+    void nav.offsetWidth;
+
+    // restaura transições para próxima abertura
+    requestAnimationFrame(() => {
+        nav.classList.remove("no-transition");
+    });
 }
 
 toggle?.addEventListener("click", (e) => {
@@ -67,11 +85,14 @@ links.forEach((link) => {
     link.addEventListener("click", (e) => {
         const href = link.getAttribute("href");
 
-        closeMenu();
-
-        if (!href || !href.startsWith("#")) return;
+        if (!href || !href.startsWith("#")) {
+            closeMenu();
+            return;
+        }
 
         e.preventDefault();
+
+        closeMenu();
 
         const target = document.querySelector(href);
 
