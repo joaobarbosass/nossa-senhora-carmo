@@ -9,9 +9,21 @@ const isInPages = window.location.pathname.includes("/pages/");
 const basePath = isInPages ? "../" : "./";
 
 async function init() {
+    // HEADER
     await loadComponent(
         "header-container",
         `${basePath}components/header.html`,
+    );
+
+    // Move o menu para filho direto do body
+    // para que não herde o filter/blur do header
+    const nav = document.querySelector(".links_header");
+    if (nav) document.body.appendChild(nav);
+
+    // FOOTER
+    await loadComponent(
+        "footer-container",
+        `${basePath}components/footer.html`,
     );
 
     // LOGO
