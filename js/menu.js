@@ -13,13 +13,18 @@ const overlay = document.querySelector(".menu-overlay");
    ============================================= */
 
 function openMenu() {
+    const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
+    document.documentElement.style.setProperty(
+        "--scrollbar-width",
+        `${scrollbarWidth}px`,
+    );
+
     // reativa transições
     nav.classList.remove("no-transition");
 
     nav.classList.add("active");
-
     overlay?.classList.add("active");
-
     document.body.classList.add("menu-open");
 }
 

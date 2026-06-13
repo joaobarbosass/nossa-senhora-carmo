@@ -1,20 +1,19 @@
 .page-content {
-    min-height: 100vh;
-
+    height: 100vh;
     padding-top: var(--header-height);
-    padding-bottom: 40px;
+    box-sizing: border-box;
 }
 
 .page-container {
     width: 100%;
-
-    min-height: calc(100vh - var(--header-height));
+    height: 100%;
+    margin: 0 auto;
 
     display: flex;
     justify-content: center;
     align-items: center;
 
-    padding: 40px;
+    box-sizing: border-box;
 }
 
 /* ==========================================
@@ -22,10 +21,10 @@
    ========================================== */
 
 .page-modal {
-    width: min(1100px, 100%);
-    height: min(800px, 100vh);
-
-    padding: 20px;
+    margin-top: 100px;
+    width: 1000px;
+    height: 650px;
+    padding: 15px;
 
     display: flex;
     flex-direction: column;
@@ -33,7 +32,7 @@
 
     border-radius: 30px;
 
-    background: linear-gradient(135deg, #5f4034, #7b5544);
+    background: #543023;
 
     box-shadow:
         0 25px 60px rgba(0, 0, 0, 0.18),
@@ -105,7 +104,7 @@
 
 @media (max-width: 768px) {
     .page-container {
-        padding: 20px;
+        padding: 0px;
     }
 
     .page-modal {

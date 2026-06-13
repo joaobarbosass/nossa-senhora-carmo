@@ -57,7 +57,7 @@ header.header-hidden {
     background: none;
     border: none;
     cursor: pointer;
-    margin-right: 10px;
+    margin-right: 20px;
     z-index: 1251;
     gap: 5px;
     padding: 0;
@@ -118,6 +118,7 @@ body.menu-open .menu-toggle {
     opacity: 1;
     transform: scale(1);
 
+    filter: blur(0px);
     transition:
         filter 0.35s ease,
         opacity 0.35s ease;
@@ -131,8 +132,12 @@ body.menu-open .page-content {
 /* ── SCROLL LOCK ── */
 
 body.menu-open {
-    overflow-y: scroll;
+    overflow: hidden;
     touch-action: none;
+    padding-right: var(
+        --scrollbar-width,
+        0px
+    ); /* compensa o espaço da scrollbar */
 }
 
 /* ── MENU OFF-CANVAS — sempre off-canvas (desktop e mobile) ── */
@@ -379,5 +384,8 @@ body.menu-open {
     .logo_header img {
         height: 65px;
         margin-left: 10px;
+    }
+    .menu-toggle {
+        margin-right: 10px;
     }
 }
