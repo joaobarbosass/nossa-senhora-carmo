@@ -1,6 +1,5 @@
 .page-content {
     height: 100vh;
-    padding-top: var(--header-height);
     box-sizing: border-box;
 }
 
@@ -11,7 +10,7 @@
 
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
 
     box-sizing: border-box;
 }
