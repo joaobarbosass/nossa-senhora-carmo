@@ -4,7 +4,7 @@
 }
 
 .page-container {
-    width: 100%;
+    width: 80%;
     height: 100%;
     margin: 0 auto;
 
@@ -20,14 +20,15 @@
    ========================================== */
 
 .page-modal {
-    margin-top: 100px;
+    margin-top: 60px;
     width: 1000px;
-    height: 650px;
+    height: auto;
     padding: 15px;
 
     display: flex;
     flex-direction: column;
     gap: 25px;
+    justify-content: center;
 
     border-radius: 30px;
 
@@ -46,6 +47,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: 10px;
 
     gap: 20px;
 }
@@ -80,6 +82,8 @@
 
 .page-video {
     flex: 1;
+    aspect-ratio: 16 / 9;
+    min-height: 550px;
 
     overflow: hidden;
 
@@ -101,39 +105,106 @@
    RESPONSIVO
    ========================================== */
 
-@media (max-width: 768px) {
+/* Tablet - até 1023px */
+@media (max-width: 1023px) {
+    .page-modal {
+        width: 90%;
+        max-width: 900px;
+        height: auto;
+        margin-top: 45px;
+        padding: 20px;
+        border-radius: 25px;
+    }
+
+    .page-video {
+        min-height: 420px;
+    }
+
+    .page-title {
+        gap: 15px;
+        margin-top: 5px;
+    }
+
+    .page-title span {
+        max-width: 100px;
+    }
+
+    .page-title h1 {
+        font-size: clamp(24px, 3.5vw, 36px);
+    }
+}
+
+/* Mobile - até 819px */
+@media (max-width: 819px) {
     .page-container {
-        padding: 0px;
+        padding: 10px;
     }
 
     .page-modal {
-        padding: 20px;
-
-        border-radius: 22px;
-
+        width: 100%;
         height: auto;
-        min-height: 500px;
+        margin-top: 35px;
+        padding: 15px;
+        border-radius: 20px;
+    }
+
+    .page-video {
+        min-height: 300px;
     }
 
     .page-title {
         gap: 12px;
+        margin-top: 10px;
     }
 
     .page-title span {
-        max-width: 60px;
+        max-width: 80px;
+    }
+
+    .page-title h1 {
+        font-size: clamp(20px, 3vw, 28px);
     }
 }
 
+/* Extra small - até 480px */
 @media (max-width: 480px) {
     .page-container {
-        padding: 15px;
+        padding: 8px;
     }
 
     .page-modal {
-        padding: 15px;
+        width: 100%;
+        height: auto;
+        margin-top: 15px;
+        padding: 12px;
+        border-radius: 15px;
+        gap: 15px;
+    }
+
+    .page-video {
+        min-height: 220px;
+    }
+
+    .page-title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 5px;
+    }
+
+    .page-title h1 {
+        font-size: clamp(18px, 2.5vw, 24px);
+        white-space: normal;
+        text-align: center;
+        max-width: 120px;
     }
 
     .page-title span {
-        display: none;
+        display: block;
+        width: 2px;
+        height: 2px;
+        max-width: unset;
+        background: #d7a82b;
     }
 }
