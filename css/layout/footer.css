@@ -1,0 +1,151 @@
+footer {
+    /* Margin igual ao topo da página*/
+    margin-top: 60px;
+    background-color: #624235;
+    color: #f1e0dc;
+    text-align: center;
+    padding: 20px;
+    display: flex;
+    height: auto;
+    justify-content: center;
+    align-items: center;
+}
+.footer-container {
+    width: 100%;
+    max-width: 1300px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-logo,
+.footer-contact,
+.footer-social {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 180px;
+
+    padding: 0 30px;
+}
+
+.footer-logo,
+.footer-contact {
+    border-right: 2px solid rgba(241, 224, 220, 0.25);
+}
+
+.footer-logo img {
+    height: 120px;
+    width: auto;
+}
+
+.footer-contact {
+    text-align: center;
+}
+
+.footer-contact p {
+    margin: 6px 0;
+    line-height: 1.5;
+}
+
+.footer-social {
+    gap: 20px;
+}
+
+.footer-social-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.footer-social-links a {
+    width: 45px;
+    height: 45px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.footer-social-links img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    transition:
+        transform 0.3s ease,
+        filter 0.3s ease;
+}
+
+.footer-social-links a:hover img {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+}
+@media (max-width: 1023px) {
+    footer {
+        margin-top: 45px;
+    }
+    .footer-container {
+        gap: 20px;
+    }
+
+    .footer-logo,
+    .footer-contact,
+    .footer-social {
+        padding: 20px 0;
+    }
+
+    .footer-social {
+        gap: 15px;
+    }
+}
+
+@media (max-width: 819px) {
+    footer {
+        margin-top: 35px;
+    }
+    .footer-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .footer-logo,
+    .footer-contact,
+    .footer-social {
+        border-right: none;
+        border-bottom: 2px solid rgba(241, 224, 220, 0.25);
+        padding: 20px 0;
+    }
+
+    .footer-social {
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    footer {
+        margin-top: 15px;
+    }
+    .footer-logo img {
+        height: 100px;
+    }
+
+    .footer-contact p {
+        font-size: 14px;
+    }
+
+    .footer-social-links a {
+        width: 40px;
+        height: 40px;
+    }
+
+    .footer-social-links img {
+        width: 35px;
+        height: 35px;
+    }
+}

@@ -1,6 +1,7 @@
 .page-content {
-    height: 100vh;
+    min-height: auto;
     box-sizing: border-box;
+    padding-top: 60px;
 }
 
 .page-container {
@@ -20,7 +21,6 @@
    ========================================== */
 
 .page-modal {
-    margin-top: 60px;
     width: 75%;
     height: auto;
     padding: 15px;
@@ -107,11 +107,13 @@
 
 /* Tablet - até 1023px */
 @media (max-width: 1023px) {
+    .page-content {
+        padding-top: 45px;
+    }
     .page-modal {
         width: 85%;
         max-width: 900px;
         height: auto;
-        margin-top: 45px;
         padding: 20px;
         border-radius: 25px;
     }
@@ -136,6 +138,10 @@
 
 /* Mobile - até 819px */
 @media (max-width: 819px) {
+    .page-content {
+        padding-top: 35px;
+    }
+
     .page-container {
         padding: 10px;
     }
@@ -143,7 +149,6 @@
     .page-modal {
         width: 85%;
         height: auto;
-        margin-top: 35px;
         padding: 15px;
         border-radius: 20px;
     }
@@ -168,6 +173,10 @@
 
 /* Extra small - até 480px */
 @media (max-width: 480px) {
+    .page-content {
+        padding-top: 15px;
+    }
+
     .page-container {
         padding: 8px;
     }
@@ -175,7 +184,6 @@
     .page-modal {
         width: 85%;
         height: auto;
-        margin-top: 15px;
         padding: 12px;
         border-radius: 15px;
         gap: 15px;

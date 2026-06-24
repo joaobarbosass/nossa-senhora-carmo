@@ -1,10 +1,26 @@
+:root {
+    --header-height: 80px;
+}
+
+@media (max-width: 820px) {
+    :root {
+        --header-height: 75px;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --header-height: 65px;
+    }
+}
+
 body {
     background-color: #f1e0dc;
     overflow-x: hidden;
-    padding-top: 90px;
+    padding-top: var(--header-height);
 
     /* Ajusta o scroll para links âncoras */
-    scroll-padding-top: 90px;
+    scroll-padding-top: var(--header-height);
 }
 
 * {
