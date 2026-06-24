@@ -126,7 +126,7 @@ let touchStartX = 0;
 let touchStartY = 0;
 
 const SWIPE_THRESHOLD = 60;
-const SWIPE_MAX_VERTICAL = 80;
+const SWIPE_MAX_VERTICAL = 50;
 
 nav?.addEventListener(
     "touchstart",
@@ -141,9 +141,9 @@ nav?.addEventListener(
     "touchend",
     (e) => {
         const deltaX = e.changedTouches[0].clientX - touchStartX;
-
         const deltaY = Math.abs(e.changedTouches[0].clientY - touchStartY);
 
+        // Arrastou para a direita
         if (deltaX > SWIPE_THRESHOLD && deltaY < SWIPE_MAX_VERTICAL) {
             closeMenu();
         }
@@ -159,11 +159,20 @@ let lastScrollY = window.scrollY;
 let menuScrollActive = false;
 let menuScrollTimeout = null;
 
+const SCROLL_TOLERANCE = 5;
+
 window.addEventListener(
     "scroll",
     () => {
         const currentY = window.scrollY;
-        const goingDown = currentY > lastScrollY;
+        const delta = currentY - lastScrollY;
+
+        // Ignora micro movimentações
+        if (Math.abs(delta) < SCROLL_TOLERANCE) {
+            return;
+        }
+
+        const goingDown = delta > 0;
 
         if (menuScrollActive) {
             if (goingDown) {
@@ -174,12 +183,17 @@ window.addEventListener(
             return;
         }
 
-        if (goingDown && currentY > 80) {
+        // Esconde rapidamente ao descer
+        if (goingDown && currentY > 30) {
             header?.classList.add("header-hidden");
-        } else if (!goingDown) {
+        }
+
+        // Mostra imediatamente ao subir
+        if (!goingDown) {
             header?.classList.remove("header-hidden");
         }
 
+        // Fecha menu se estiver aberto
         if (goingDown && nav?.classList.contains("active")) {
             closeMenu();
         }

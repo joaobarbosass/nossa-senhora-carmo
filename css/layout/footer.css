@@ -1,6 +1,4 @@
 footer {
-    /* Margin igual ao topo da página*/
-    margin-top: 60px;
     background-color: #624235;
     color: #f1e0dc;
     text-align: center;
@@ -87,9 +85,6 @@ footer {
     filter: brightness(1.2);
 }
 @media (max-width: 1023px) {
-    footer {
-        margin-top: 45px;
-    }
     .footer-container {
         gap: 20px;
     }
@@ -106,9 +101,6 @@ footer {
 }
 
 @media (max-width: 819px) {
-    footer {
-        margin-top: 35px;
-    }
     .footer-container {
         flex-direction: column;
         gap: 20px;
@@ -128,9 +120,6 @@ footer {
 }
 
 @media (max-width: 480px) {
-    footer {
-        margin-top: 15px;
-    }
     .footer-logo img {
         height: 100px;
     }
