@@ -105,4 +105,20 @@ async function init() {
     }
 }
 
-init();
+async function startApp() {
+    const startTime = Date.now();
+
+    await init();
+
+    const elapsedTime = Date.now() - startTime;
+
+    const minimumLoadingTime = 300;
+
+    const remainingTime = Math.max(minimumLoadingTime - elapsedTime, 0);
+
+    setTimeout(() => {
+        window.hideLoading?.();
+    }, remainingTime);
+}
+
+startApp();
