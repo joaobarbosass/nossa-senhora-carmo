@@ -253,6 +253,7 @@ body.menu-open {
 }
 
 .links_header ul li a {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -266,8 +267,64 @@ body.menu-open {
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+}
 
-    transition: all 0.3s ease;
+.links_header ul li a {
+    transition:
+        color 220ms ease,
+        transform 220ms ease;
+}
+
+.links_header ul li a .menu-link-text {
+    position: relative;
+    display: inline-block;
+}
+
+.links_header ul li a .menu-link-text::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 100%;
+    height: 2px;
+    border-radius: 999px;
+    background: #d4af37;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.18);
+    opacity: 0;
+    transform: translateX(0) scaleX(0);
+    transform-origin: left center;
+    pointer-events: none;
+    will-change: transform, opacity;
+    transition:
+        transform 760ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 180ms ease;
+}
+
+.links_header ul li a.is-idle {
+    color: #f1e0dc;
+}
+
+.links_header ul li a.is-idle .menu-link-text::after {
+    opacity: 0;
+    transform: translateX(0) scaleX(0);
+}
+
+.links_header ul li a.is-hover,
+.links_header ul li a.is-loading,
+.links_header ul li a.is-completed {
+    color: #d4af37;
+}
+
+.links_header ul li a.is-hover .menu-link-text::after {
+    opacity: 1;
+    transform: translateX(0) scaleX(1);
+}
+
+.links_header ul li a.is-loading .menu-link-text::after,
+.links_header ul li a.is-completed .menu-link-text::after {
+    opacity: 1;
+    transform: translateX(0) scaleX(1);
+    transition-duration: 620ms, 180ms;
 }
 
 .menu-item-label {
