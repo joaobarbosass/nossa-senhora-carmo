@@ -107,7 +107,3 @@ body.loading {
     overflow: hidden;
     cursor: wait;
 }
-
-body.loading > :not(#loading-screen) {
-    visibility: hidden;
-}
