@@ -13,6 +13,15 @@ const MENU_LINK_LOADING = "is-loading";
 const MENU_LINK_COMPLETED = "is-completed";
 const pendingLinkActions = new WeakMap();
 
+/* ── TOQUE: DIFERENCIAÇÃO SCROLL/CLIQUE (estado global do menu) ── */
+const TOUCH_MOVE_THRESHOLD = 15; // px
+
+let touchStartX = 0;
+let touchStartY = 0;
+let isTouchScrolling = false;
+let touchedLink = null;
+let lastInteractionWasTouch = false;
+
 /* =============================================
    ABRIR / FECHAR
    ============================================= */
@@ -134,6 +143,12 @@ function closeMenu() {
     // remove delays/transições ao fechar
     nav.classList.add("no-transition");
 
+    // reseta scroll do menu para o topo (sem animação)
+    const menuList = nav?.querySelector("ul");
+    if (menuList) {
+        menuList.scrollTop = 0;
+    }
+
     nav.classList.remove("active");
 
     overlay?.classList.remove("active");
@@ -209,25 +224,16 @@ links.forEach((link) => {
         setLinkState(link, MENU_LINK_IDLE);
     });
 
-    link.addEventListener(
-        "pointerdown",
-        (e) => {
-            if (e.pointerType !== "touch") return;
-
-            const href = link.getAttribute("href");
-
-            if (!href) return;
-
-            e.preventDefault();
-            armLinkNavigation(link, href);
-        },
-        { passive: false },
-    );
-
     link.addEventListener("click", (e) => {
         const href = link.getAttribute("href");
 
         if (!href) return;
+
+        /* ── IGNORAR CLIQUE SINTÉTICO DO TOUCH ── */
+        if (lastInteractionWasTouch) {
+            lastInteractionWasTouch = false;
+            return;
+        }
 
         e.preventDefault();
         e.stopPropagation();
@@ -249,11 +255,8 @@ links.forEach((link) => {
 });
 
 /* =============================================
-   SWIPE PARA FECHAR
+   SWIPE PARA FECHAR / TOQUE: SCROLL vs CLIQUE
    ============================================= */
-
-let touchStartX = 0;
-let touchStartY = 0;
 
 const SWIPE_THRESHOLD = 60;
 const SWIPE_MAX_VERTICAL = 50;
@@ -261,8 +264,30 @@ const SWIPE_MAX_VERTICAL = 50;
 nav?.addEventListener(
     "touchstart",
     (e) => {
+        clearTimeout(window.__touchResetTimeout);
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
+        isTouchScrolling = false;
+        touchedLink = e.target.closest("a");
+    },
+    { passive: true },
+);
+
+nav?.addEventListener(
+    "touchmove",
+    (e) => {
+        if (isTouchScrolling) return;
+
+        const dx = Math.abs(e.touches[0].clientX - touchStartX);
+        const dy = Math.abs(e.touches[0].clientY - touchStartY);
+
+        if (
+            !isTouchScrolling &&
+            (dx >= TOUCH_MOVE_THRESHOLD || dy >= TOUCH_MOVE_THRESHOLD)
+        ) {
+            isTouchScrolling = true;
+            touchedLink = null;
+        }
     },
     { passive: true },
 );
@@ -277,6 +302,23 @@ nav?.addEventListener(
         if (deltaX > SWIPE_THRESHOLD && deltaY < SWIPE_MAX_VERTICAL) {
             closeMenu();
         }
+
+        // Se não foi scroll e existe link tocado, inicia animação
+        if (!isTouchScrolling && touchedLink) {
+            const href = touchedLink.getAttribute("href");
+            if (href) {
+                armLinkNavigation(touchedLink, href);
+                lastInteractionWasTouch = true;
+            }
+        }
+
+        // Limpa o link tocado
+        touchedLink = null;
+
+        // Reseta scroll flag com atraso para evitar issues com navegadores
+        window.__touchResetTimeout = setTimeout(() => {
+            isTouchScrolling = false;
+        }, 120);
     },
     { passive: true },
 );

@@ -49,8 +49,12 @@ async function init() {
        LOGO
     ========================= */
 
-    document.querySelectorAll("[data-logo]").forEach((img) => {
+    document.querySelectorAll("[data-logo-branca]").forEach((img) => {
         img.src = `${basePath}assets/images/logo/logo-branca.png`;
+    });
+
+    document.querySelectorAll("[data-logo-colorida]").forEach((img) => {
+        img.src = `${basePath}assets/images/logo/logo-colorida.png`;
     });
 
     /* =========================
