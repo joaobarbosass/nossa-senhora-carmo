@@ -1,0 +1,125 @@
+window.igrejasComunidades = [
+    {
+        id: "matriz",
+        nome: "Paróquia Nossa Senhora do Carmo",
+        subtitulo: "Igreja Matriz",
+        imagemPrincipal: "assets/images/igrejas/nsra-carmo/Sacrario.jpg",
+        imagemAlt: "Paróquia Nossa Senhora do Carmo",
+        objectPosition: "center center",
+        galeria: [
+            {
+                src: "assets/images/igrejas/nsra-carmo/Sacrario.jpg",
+                alt: "Paróquia Nossa Senhora do Carmo",
+                objectPosition: "center center",
+            },
+        ],
+        missas: [
+            {
+                dia: "Sexta-feira",
+                horario: "19h",
+                observacao: "",
+            },
+            {
+                dia: "Domingo",
+                horario: "7h",
+                observacao: "",
+            },
+            {
+                dia: "Domingo",
+                horario: "9h",
+                observacao: "Missa das Crianças",
+            },
+            {
+                dia: "Domingo",
+                horario: "19h",
+                observacao: "",
+            },
+        ],
+        confissoes: [
+            {
+                dia: "Sexta-feira",
+                horario: "das 10h às 14h",
+                observacao: "",
+            },
+        ],
+        celebracoesEspeciais: [
+            {
+                nome: "Missa dos Impossíveis",
+                dia: "Todo dia 19 de cada mês",
+                horario: "19h",
+                observacao: "",
+            },
+        ],
+        endereco: "",
+        googleMaps: "",
+        waze: "",
+    },
+    {
+        id: "menino-jesus",
+        nome: "Igreja Menino Jesus",
+        subtitulo: "",
+        imagemPrincipal: "",
+        imagemAlt: "Igreja Menino Jesus",
+        objectPosition: "center center",
+        galeria: [],
+        missas: [
+            {
+                dia: "Quinta-feira",
+                horario: "19h",
+                observacao: "",
+            },
+            {
+                dia: "Sábado",
+                horario: "19h",
+                observacao: "",
+            },
+        ],
+        confissoes: [],
+        celebracoesEspeciais: [],
+        endereco: "",
+        googleMaps: "",
+        waze: "",
+    },
+    {
+        id: "ressurreicao",
+        nome: "Capela da Ressurreição",
+        subtitulo: "",
+        imagemPrincipal: "",
+        imagemAlt: "Capela da Ressurreição",
+        objectPosition: "center center",
+        galeria: [],
+        missas: [
+            {
+                dia: "Quinta-feira",
+                horario: "7h",
+                observacao: "",
+            },
+        ],
+        confissoes: [],
+        celebracoesEspeciais: [],
+        endereco: "",
+        googleMaps: "",
+        waze: "",
+    },
+    {
+        id: "milagrosa",
+        nome: "Capela da Medalha Milagrosa",
+        subtitulo: "",
+        imagemPrincipal: "",
+        imagemAlt: "Capela da Medalha Milagrosa",
+        objectPosition: "center center",
+        galeria: [],
+        missas: [
+            {
+                dia: "Quarta-feira",
+                horario: "19h",
+                observacao: "",
+            },
+        ],
+        confissoes: [],
+        celebracoesEspeciais: [],
+        endereco: "",
+        googleMaps: "",
+        waze: "",
+    },
+];

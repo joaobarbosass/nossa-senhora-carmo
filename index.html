@@ -35,9 +35,197 @@
 
         <!-- Conteúdo da página -->
         <main class="page-content">
-            <!-- Provisorio apenas para testes -->
-            <a href="pages/monte_calvario.html">Monte Calvário</a>
+            <section
+                class="hero-carousel"
+                aria-roledescription="carrossel"
+                aria-label="Igrejas e comunidades da Paróquia"
+                data-hero-carousel
+            >
+                <div class="hero-carousel__media" data-carousel-media></div>
+
+                <div class="hero-carousel__content">
+                    <p class="hero-carousel__eyebrow">Comunidade</p>
+                    <h1 data-carousel-title>
+                        Paróquia Nossa Senhora do Carmo
+                    </h1>
+
+                    <button
+                        class="hero-carousel__cta"
+                        type="button"
+                        data-community-id="matriz"
+                        data-carousel-community-cta
+                    >
+                        Conhecer Igreja
+                    </button>
+                </div>
+
+                <div
+                    class="hero-carousel__controls"
+                    aria-label="Controles do carrossel"
+                >
+                    <button
+                        class="hero-carousel__button"
+                        type="button"
+                        aria-label="Slide anterior"
+                        data-carousel-prev
+                    >
+                        <span class="material-symbols-outlined" aria-hidden="true">
+                            chevron_left
+                        </span>
+                    </button>
+
+                    <div
+                        class="hero-carousel__dots"
+                        aria-label="Selecionar igreja"
+                        data-carousel-dots
+                    ></div>
+
+                    <button
+                        class="hero-carousel__button"
+                        type="button"
+                        aria-label="Próximo slide"
+                        data-carousel-next
+                    >
+                        <span class="material-symbols-outlined" aria-hidden="true">
+                            chevron_right
+                        </span>
+                    </button>
+                </div>
+            </section>
+
+            <section id="comunidades" class="home-section comunidades-section">
+                <div class="section-title">
+                    <span></span>
+                    <h2>Comunidades</h2>
+                    <span></span>
+                </div>
+
+                <div
+                    class="comunidades-grid"
+                    aria-label="Comunidades da Paróquia"
+                    data-comunidades-grid
+                ></div>
+            </section>
         </main>
+
+        <div
+            class="community-modal-overlay"
+            aria-hidden="true"
+            hidden
+            data-community-modal-overlay
+        ></div>
+
+        <section
+            class="community-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="community-modal-title"
+            aria-hidden="true"
+            hidden
+            tabindex="-1"
+            data-community-modal
+        >
+            <div class="community-modal__dialog">
+                <button
+                    class="community-modal__close"
+                    type="button"
+                    aria-label="Fechar detalhes da comunidade"
+                    data-community-modal-close
+                >
+                    <span class="material-symbols-outlined" aria-hidden="true">
+                        close
+                    </span>
+                </button>
+
+                <div class="community-modal__gallery">
+                    <div
+                        class="community-gallery__viewport"
+                        data-community-gallery
+                    ></div>
+
+                    <button
+                        class="community-gallery__button community-gallery__button--prev"
+                        type="button"
+                        aria-label="Foto anterior"
+                        data-community-gallery-prev
+                    >
+                        <span class="material-symbols-outlined" aria-hidden="true">
+                            chevron_left
+                        </span>
+                    </button>
+
+                    <button
+                        class="community-gallery__button community-gallery__button--next"
+                        type="button"
+                        aria-label="Próxima foto"
+                        data-community-gallery-next
+                    >
+                        <span class="material-symbols-outlined" aria-hidden="true">
+                            chevron_right
+                        </span>
+                    </button>
+
+                    <div
+                        class="community-gallery__dots"
+                        aria-label="Selecionar foto"
+                        data-community-gallery-dots
+                    ></div>
+                </div>
+
+                <div class="community-modal__info">
+                    <p class="community-modal__subtitle" data-community-subtitle>
+                    </p>
+
+                    <h3 id="community-modal-title" data-community-title></h3>
+
+                    <div class="community-info-group">
+                        <h4>Horários de Missa</h4>
+                        <div data-community-mass-times></div>
+                    </div>
+
+                    <div
+                        class="community-info-group"
+                        data-community-confession-group
+                    >
+                        <h4>Horários de Confissão</h4>
+                        <div data-community-confession-times></div>
+                    </div>
+
+                    <div
+                        class="community-info-group"
+                        data-community-special-group
+                    >
+                        <h4>Celebração especial</h4>
+                        <div data-community-special-times></div>
+                    </div>
+
+                    <div class="community-info-group">
+                        <h4>Endereço</h4>
+                        <p data-community-address></p>
+                    </div>
+
+                    <div class="community-modal__actions">
+                        <a
+                            class="community-modal__link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            data-community-maps
+                        >
+                            Ver no Google Maps
+                        </a>
+
+                        <a
+                            class="community-modal__link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            data-community-waze
+                        >
+                            Abrir no Waze
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- Footer -->
         <div id="footer-container"></div>
@@ -46,7 +234,9 @@
         <script src="./js/components.js"></script>
 
         <!-- Importa scripts -->
+        <script src="./js/igrejas-data.js"></script>
         <script src="./js/carousel.js"></script>
+        <script src="./js/comunidades.js"></script>
         <script src="./js/fade.js"></script>
         <script src="./js/main.js"></script>
     </body>
