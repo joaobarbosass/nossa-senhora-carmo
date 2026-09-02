@@ -1,6 +1,6 @@
 .hero-carousel {
     position: relative;
-    min-height: calc(100dvh - var(--header-height));
+    min-height: calc(var(--stable-viewport-height) - var(--header-height));
     overflow: hidden;
     isolation: isolate;
     background:
@@ -26,15 +26,11 @@
     height: 100%;
     object-fit: cover;
     opacity: 0;
-    transform: scale(1.02);
-    transition:
-        opacity 0.75s ease,
-        transform 1.4s ease;
+    transition: opacity 0.75s ease;
 }
 
 .hero-carousel__image.active {
     opacity: 1;
-    transform: scale(1);
 }
 
 .hero-carousel::after {
@@ -60,7 +56,7 @@
 
 .hero-carousel__content {
     width: min(1120px, calc(100% - 40px));
-    min-height: calc(100dvh - var(--header-height));
+    min-height: calc(var(--stable-viewport-height) - var(--header-height));
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -115,13 +111,17 @@
         transform 0.24s ease;
 }
 
-.hero-carousel__cta:hover,
 .hero-carousel__cta:focus-visible {
     background: #543023;
     border-color: #d4af37;
     color: #d4af37;
     outline: none;
     transform: translateY(-2px);
+}
+
+.hero-carousel__cta:active,
+.hero-carousel__cta.is-tap-feedback {
+    transform: scale(0.98);
 }
 
 .hero-carousel__controls {
@@ -148,15 +148,20 @@
     transition:
         background 0.22s ease,
         border-color 0.22s ease,
-        color 0.22s ease;
+        color 0.22s ease,
+        transform 0.18s ease;
 }
 
-.hero-carousel__button:hover,
 .hero-carousel__button:focus-visible {
     background: rgba(36, 22, 16, 0.56);
     border-color: rgba(212, 175, 55, 0.72);
     color: #d4af37;
     outline: none;
+}
+
+.hero-carousel__button:active,
+.hero-carousel__button.is-tap-feedback {
+    transform: scale(0.96);
 }
 
 .hero-carousel__dots {
@@ -269,7 +274,6 @@
         transform 0.28s ease;
 }
 
-.comunidade-card:hover,
 .comunidade-card:focus-visible {
     transform: translateY(-7px);
     border-color: rgba(212, 175, 55, 0.55);
@@ -277,10 +281,14 @@
     outline: none;
 }
 
-.comunidade-card:hover::after,
 .comunidade-card:focus-visible::after {
     opacity: 1;
     transform: scaleX(1);
+}
+
+.comunidade-card:active,
+.comunidade-card.is-tap-feedback {
+    transform: scale(0.99);
 }
 
 .comunidade-card__image {
@@ -451,13 +459,17 @@
         color 0.24s ease;
 }
 
-.live-section__link:hover,
 .live-section__link:focus-visible {
     transform: translateY(-2px);
     border-color: #d4af37;
     background: #d4af37;
     color: #241610;
     outline: none;
+}
+
+.live-section__link:active,
+.live-section__link.is-tap-feedback {
+    transform: scale(0.98);
 }
 
 /* ==========================================
@@ -750,15 +762,20 @@ body.community-modal-open .page-content {
     transition:
         background 0.24s ease,
         border-color 0.24s ease,
-        color 0.24s ease;
+        color 0.24s ease,
+        transform 0.18s ease;
 }
 
-.community-modal__close:hover,
 .community-modal__close:focus-visible {
     background: rgba(36, 22, 16, 0.76);
     border-color: rgba(212, 175, 55, 0.72);
     color: #d4af37;
     outline: none;
+}
+
+.community-modal__close:active,
+.community-modal__close.is-tap-feedback {
+    transform: scale(0.96);
 }
 
 .community-modal__gallery {
@@ -821,15 +838,20 @@ body.community-modal-open .page-content {
     transition:
         background 0.24s ease,
         border-color 0.24s ease,
-        color 0.24s ease;
+        color 0.24s ease,
+        transform 0.18s ease;
 }
 
-.community-gallery__button:hover,
 .community-gallery__button:focus-visible {
     background: rgba(36, 22, 16, 0.68);
     border-color: rgba(212, 175, 55, 0.72);
     color: #d4af37;
     outline: none;
+}
+
+.community-gallery__button:active,
+.community-gallery__button.is-tap-feedback {
+    transform: translateY(-50%) scale(0.96);
 }
 
 .community-gallery__button--prev {
@@ -1011,15 +1033,71 @@ body.community-modal-open .page-content {
     transition:
         background 0.24s ease,
         border-color 0.24s ease,
-        color 0.24s ease;
+        color 0.24s ease,
+        transform 0.18s ease;
 }
 
-.community-modal__link:hover,
 .community-modal__link:focus-visible {
     background: #543023;
     border-color: #d4af37;
     color: #d4af37;
     outline: none;
+}
+
+.community-modal__link:active,
+.community-modal__link.is-tap-feedback {
+    transform: scale(0.98);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .hero-carousel__cta:hover {
+        background: #543023;
+        border-color: #d4af37;
+        color: #d4af37;
+        transform: translateY(-2px);
+    }
+
+    .hero-carousel__button:hover {
+        background: rgba(36, 22, 16, 0.56);
+        border-color: rgba(212, 175, 55, 0.72);
+        color: #d4af37;
+    }
+
+    .comunidade-card:hover {
+        transform: translateY(-7px);
+        border-color: rgba(212, 175, 55, 0.55);
+        box-shadow: 0 18px 44px rgba(98, 66, 53, 0.2);
+    }
+
+    .comunidade-card:hover::after {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+
+    .live-section__link:hover {
+        transform: translateY(-2px);
+        border-color: #d4af37;
+        background: #d4af37;
+        color: #241610;
+    }
+
+    .community-modal__close:hover {
+        background: rgba(36, 22, 16, 0.76);
+        border-color: rgba(212, 175, 55, 0.72);
+        color: #d4af37;
+    }
+
+    .community-gallery__button:hover {
+        background: rgba(36, 22, 16, 0.68);
+        border-color: rgba(212, 175, 55, 0.72);
+        color: #d4af37;
+    }
+
+    .community-modal__link:hover {
+        background: #543023;
+        border-color: #d4af37;
+        color: #d4af37;
+    }
 }
 
 @keyframes hero-title-in {

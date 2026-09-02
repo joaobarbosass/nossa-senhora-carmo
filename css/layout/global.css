@@ -1,8 +1,15 @@
 :root {
     --header-height: 80px;
+    --stable-viewport-height: 100vh;
     --scrim-background: rgba(22, 12, 9, 0.54);
     --scrim-blur: 3px;
     --scrim-transition: opacity 0.24s ease;
+}
+
+@supports (height: 100svh) {
+    :root {
+        --stable-viewport-height: 100svh;
+    }
 }
 
 @media (max-width: 820px) {

@@ -419,6 +419,7 @@ let lastScrollY = window.scrollY;
 let menuScrollActive = false;
 let menuScrollTimeout = null;
 let scrollTicking = false;
+const heroSection = document.querySelector("[data-hero-carousel]");
 
 const SCROLL_TOLERANCE = 5;
 const DESKTOP_HEADER_BREAKPOINT = 1200;
@@ -427,11 +428,33 @@ function isDesktopHeaderFixed() {
     return window.innerWidth > DESKTOP_HEADER_BREAKPOINT;
 }
 
+function getHeaderHeight() {
+    const headerHeight = getComputedStyle(document.documentElement)
+        .getPropertyValue("--header-height")
+        .trim();
+
+    return Number.parseFloat(headerHeight) || 0;
+}
+
+function isHeroStillInView() {
+    if (!heroSection) return false;
+
+    return heroSection.getBoundingClientRect().bottom > getHeaderHeight();
+}
+
 function updateHeaderVisibility() {
     const currentY = window.scrollY;
     const delta = currentY - lastScrollY;
 
     if (isDesktopHeaderFixed()) {
+        header?.classList.remove("header-hidden");
+        lastScrollY = currentY;
+        scrollTicking = false;
+
+        return;
+    }
+
+    if (isHeroStillInView()) {
         header?.classList.remove("header-hidden");
         lastScrollY = currentY;
         scrollTicking = false;
