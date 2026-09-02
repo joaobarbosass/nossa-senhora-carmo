@@ -5,75 +5,88 @@
         </a>
     </div>
 
-    <button class="menu-toggle" aria-label="Abrir menu">
+    <button
+        class="menu-toggle"
+        type="button"
+        aria-label="Abrir menu"
+        aria-controls="menu-principal"
+        aria-expanded="false"
+    >
         <span></span>
         <span></span>
         <span></span>
     </button>
 
-    <nav class="links_header">
-        <button class="menu-close" aria-label="Fechar menu">
+    <nav
+        class="links_header"
+        id="menu-principal"
+        aria-label="Menu principal"
+        aria-hidden="true"
+    >
+        <button class="menu-close" type="button" aria-label="Fechar menu">
             <span class="material-symbols-outlined">close</span>
         </button>
 
-        <ul>
-            <!-- APENAS HOME -->
-            <li data-page="home">
-                <a href="#comunidades">Comunidades</a>
-            </li>
-            <li data-page="home">
-                <a href="#horarios-missa">Horários de Missa </a>
-            </li>
-            <li data-page="home">
-                <a href="#fique-por-dentro">Fique por dentro</a>
-            </li>
-            <li data-page="home">
-                <a href="#agenda">Agenda</a>
-            </li>
-            <li data-page="home">
-                <a href="#horarios-confissao">Horários de Confissão</a>
-            </li>
-            <li data-page="home">
-                <a href="#assista-ao-vivo">Assista ao Vivo</a>
-            </li>
-            <li data-page="home">
-                <a href="#missa-dos-impossiveis">Missa dos Impossíveis</a>
-            </li>
-            <li data-page="home">
-                <a href="#paroco">Pároco</a>
-            </li>
-            <li data-page="home">
-                <a href="#vitrais">Vitrais</a>
-            </li>
+        <div class="menu-container">
+            <ul class="menu-links-container">
+                <!-- APENAS HOME -->
+                <li data-page="home">
+                    <a href="#comunidades">Comunidades</a>
+                </li>
+                <li data-page="home">
+                    <a href="#horarios-missa">Horários de Missa </a>
+                </li>
+                <li data-page="home">
+                    <a href="#fique-por-dentro">Fique por dentro</a>
+                </li>
+                <li data-page="home">
+                    <a href="#agenda">Agenda</a>
+                </li>
+                <li data-page="home">
+                    <a href="#horarios-confissao">Horários de Confissão</a>
+                </li>
+                <li data-page="home">
+                    <a href="#assista-ao-vivo">Assista ao Vivo</a>
+                </li>
+                <li data-page="home">
+                    <a href="#missa-dos-impossiveis">Missa dos Impossíveis</a>
+                </li>
+                <li data-page="home">
+                    <a href="#paroco">Pároco</a>
+                </li>
+                <li data-page="home">
+                    <a href="#vitrais">Vitrais</a>
+                </li>
 
-            <!-- APENAS PAGES -->
-            <li data-page="internal">
-                <a href="../index.html">Página Inicial</a>
-            </li>
-            <li data-page="internal">
-                <a href="../pages/monte_calvario.html">Monte Calvário</a>
-            </li>
-            <li data-page="internal">
-                <a href="../pages/monte_horeb.html">Monte Horeb</a>
-            </li>
-            <li data-page="internal">
-                <a href="../pages/monte_moria.html">Monte Moria</a>
-            </li>
-            <li data-page="internal">
-                <a href="../pages/monte_carmelo.html">Monte Carmelo</a>
-            </li>
+                <!-- APENAS PAGES -->
+                <li data-page="internal">
+                    <a href="../index.html">Página Inicial</a>
+                </li>
+                <li data-page="internal">
+                    <a data-page-link="monte_calvario.html">Monte Calvário</a>
+                </li>
+                <li data-page="internal">
+                    <a data-page-link="monte_horeb.html">Monte Horeb</a>
+                </li>
+                <li data-page="internal">
+                    <a data-page-link="monte_moria.html">Monte Moria</a>
+                </li>
+                <li data-page="internal">
+                    <a data-page-link="monte_carmelo.html">Monte Carmelo</a>
+                </li>
 
-            <!-- EM TODAS -->
-            <li data-page="all">
-                <span class="menu-cta-button">
-                    <a href="#fale-conosco">Fale conosco</a>
-                </span>
-            </li>
-        </ul>
+                <!-- EM TODAS -->
+                <li data-page="all">
+                    <span class="menu-cta-button">
+                        <a href="#fale-conosco">Fale conosco</a>
+                    </span>
+                </li>
+            </ul>
 
-        <div class="menu-footer">
-            <img data-logo-colorida alt="Logo" />
-            <p>Paróquia Nossa Senhora do Carmo</p>
+            <div class="menu-footer">
+                <img data-logo-colorida alt="Logo" />
+                <p>Paróquia Nossa Senhora do Carmo</p>
+            </div>
         </div>
     </nav>
 </header>

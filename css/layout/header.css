@@ -88,6 +88,11 @@ header.header-hidden {
     width: 100%;
 }
 
+.menu-toggle:focus-visible {
+    outline: 2px solid #d4af37;
+    outline-offset: 6px;
+}
+
 /* Esconde o toggle enquanto menu está aberto (botão close assume o papel) */
 body.menu-open .menu-toggle {
     opacity: 0;
@@ -140,9 +145,12 @@ body.menu-open .page-content {
 /* ── SCROLL LOCK ── */
 
 body.menu-open {
+    position: fixed;
+    top: calc(var(--locked-scroll-y, 0px) * -1);
+    left: 0;
+    width: calc(100% - var(--page-scrollbar-width, 0px));
     overflow: hidden;
     touch-action: pan-y pan-x;
-    padding-right: var(--scrollbar-width, 0px);
 }
 
 /* ── MENU OFF-CANVAS — sempre off-canvas (desktop e mobile) ── */
@@ -152,10 +160,12 @@ body.menu-open {
     top: 0;
     right: 0;
     height: 100dvh;
-    width: 320px;
+    width: 360px;
     max-width: 100%;
 
-    background: linear-gradient(180deg, #3b261d 0%, #241610 100%);
+    background:
+        linear-gradient(180deg, rgba(98, 66, 53, 0.96) 0%, #241610 100%),
+        #3b261d;
 
     display: flex;
     flex-direction: column;
@@ -163,25 +173,31 @@ body.menu-open {
     align-items: stretch;
 
     transform: translateX(100%);
-    opacity: 0;
     pointer-events: none;
-    will-change: transform, opacity;
+    will-change: transform;
 
-    transition:
-        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-        opacity 0.35s ease;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 
     z-index: 3000;
     padding-top: 20px;
     box-sizing: border-box;
     contain: layout style paint;
+    overflow: hidden;
     box-shadow: -12px 0 30px rgba(0, 0, 0, 0.35);
 }
 
 .links_header.active {
     transform: translateX(0);
-    opacity: 1;
     pointer-events: auto;
+}
+
+.menu-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    padding-top: 62px;
+    box-sizing: border-box;
 }
 
 /* ── BOTÃO FECHAR ── */
@@ -197,8 +213,8 @@ body.menu-open {
     right: 30px;
     margin: 0;
 
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(98, 66, 53, 0.4);
+    background: rgba(241, 224, 220, 0.08);
+    border: 1px solid rgba(241, 224, 220, 0.16);
     border-radius: 8px;
 
     color: #f1e0dc;
@@ -211,9 +227,16 @@ body.menu-open {
     z-index: 3001;
 }
 
+.menu-close:hover,
+.menu-close:focus-visible {
+    background: rgba(241, 224, 220, 0.15);
+    border-color: rgba(212, 175, 55, 0.6);
+    outline: none;
+}
+
 .menu-close:active {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(98, 66, 53, 0.7);
+    background: rgba(241, 224, 220, 0.2);
+    border-color: rgba(212, 175, 55, 0.8);
 }
 
 .menu-close span {
@@ -232,15 +255,17 @@ body.menu-open {
     flex-direction: column;
     align-items: stretch;
     gap: 0;
-    padding: 58px 0 20px;
+    padding: 0 0 20px;
     margin: 0;
     display: flex;
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
     scroll-behavior: smooth;
     touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
 }
 
 /* ── SCROLLBAR CUSTOMIZADA ── */
@@ -292,7 +317,7 @@ body.menu-open {
     justify-content: center;
     align-items: flex-start;
 
-    padding: 18px 24px;
+    padding: 17px 28px;
     text-decoration: none;
     color: #f1e0dc;
     font-size: 18px;
@@ -335,6 +360,12 @@ body.menu-open {
 
 .links_header ul li a.is-idle {
     color: #f1e0dc;
+}
+
+.links_header ul li a:focus-visible {
+    color: #d4af37;
+    outline: none;
+    background: rgba(241, 224, 220, 0.06);
 }
 
 .links_header ul li a.is-idle .menu-link-text::after {
@@ -403,11 +434,12 @@ body.menu-open {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 15px 12px 20px 12px;
-    padding: 8px 12px;
+    margin: 16px 20px 24px 20px;
+    padding: 0;
 
     background: linear-gradient(135deg, #624235, #7a5244);
     border-radius: 12px;
+    border: 1px solid rgba(212, 175, 55, 0.35);
 
     color: #f0f0f0;
     font-size: 12px;
@@ -429,6 +461,13 @@ body.menu-open {
     transform: translateY(20px);
 }
 
+.menu-cta-button a {
+    width: 100%;
+    padding: 14px 18px;
+    align-items: center !important;
+    text-align: center;
+}
+
 .links_header.active .menu-cta-button {
     opacity: 1;
     transform: translateY(0);
@@ -442,10 +481,11 @@ body.menu-open {
     align-items: center;
     justify-content: center;
     gap: 16px;
-    padding: 30px 20px 20px;
+    padding: 28px 24px 22px;
     margin-top: auto;
     text-align: center;
     border-top: 1px solid rgba(241, 224, 220, 0.1);
+    background: rgba(36, 22, 16, 0.22);
 
     opacity: 0;
     transform: translateY(20px);

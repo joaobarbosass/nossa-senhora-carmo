@@ -1,25 +1,69 @@
-const loading = document.createElement("div");
+function createLoadingScreen() {
+    if (!document.body || document.getElementById("loading-screen")) return;
 
-loading.id = "loading-screen";
+    const loading = document.createElement("div");
 
-loading.innerHTML = `
-    <div class="loading-spinner"></div>
-`;
+    loading.id = "loading-screen";
+    loading.setAttribute("aria-live", "polite");
+    loading.setAttribute("aria-busy", "true");
 
-document.body.prepend(loading);
+    loading.innerHTML = `
+        <div class="loading-content">
+            <span class="loading-spinner" aria-hidden="true"></span>
+        </div>
+    `;
 
-document.body.classList.add("loading");
+    document.body.prepend(loading);
+    document.body.classList.add("loading");
+}
+
+createLoadingScreen();
+
+if (!document.body) {
+    document.addEventListener("DOMContentLoaded", createLoadingScreen, {
+        once: true,
+    });
+}
+
+let loadingFinalizado = false;
 
 window.hideLoading = function () {
     const loadingScreen = document.getElementById("loading-screen");
 
-    if (!loadingScreen) return;
+    if (!loadingScreen || loadingFinalizado) return;
+
+    loadingFinalizado = true;
+    let loadingRemovido = false;
+
+    const finalizarLoading = () => {
+        if (loadingRemovido) return;
+
+        loadingRemovido = true;
+
+        document.body.classList.remove("loading");
+        document.body.classList.remove("loading-fade-out");
+
+        if (loadingScreen.parentNode) {
+            loadingScreen.remove();
+        }
+    };
+
+    document.body.classList.add("loading-fade-out");
 
     loadingScreen.classList.add("hidden");
+    loadingScreen.setAttribute("aria-busy", "false");
 
-    document.body.classList.remove("loading");
+    loadingScreen.addEventListener(
+        "transitionend",
+        (event) => {
+            if (event.propertyName === "opacity") {
+                finalizarLoading();
+            }
+        },
+        { once: true },
+    );
 
     setTimeout(() => {
-        loadingScreen.remove();
-    }, 300);
+        finalizarLoading();
+    }, 420);
 };
