@@ -28,15 +28,8 @@ header {
     padding: 0 10px;
 
     transform: translateY(0);
-    transition:
-        transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-        filter 0.35s ease;
+    transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: transform;
-}
-
-body.menu-open header {
-    filter: blur(1px);
-    opacity: 1;
 }
 
 header.header-hidden {
@@ -108,16 +101,15 @@ body.menu-open .menu-toggle {
     width: 100%;
     height: 100dvh;
 
-    /* background fixo — só opacity anima, garantindo transição suave */
-    background: rgba(0, 0, 0, 0.45);
+    background: var(--scrim-background);
     z-index: 1500;
 
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.35s ease;
+    transition: var(--scrim-transition);
 
-    backdrop-filter: blur(1px);
-    -webkit-backdrop-filter: blur(1px);
+    backdrop-filter: blur(var(--scrim-blur));
+    -webkit-backdrop-filter: blur(var(--scrim-blur));
 }
 
 .menu-overlay.active {
@@ -131,15 +123,13 @@ body.menu-open .menu-toggle {
     opacity: 1;
     transform: scale(1);
 
-    filter: blur(0px);
-    transition:
-        filter 0.35s ease,
-        opacity 0.35s ease;
+    filter: none;
+    transition: opacity 0.24s ease;
 }
 
 body.menu-open .page-content {
-    filter: blur(1px);
-    opacity: 0.9;
+    filter: none;
+    opacity: 1;
 }
 
 /* ── SCROLL LOCK ── */

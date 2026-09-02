@@ -106,6 +106,103 @@
                     data-comunidades-grid
                 ></div>
             </section>
+
+            <section
+                id="assista-ao-vivo"
+                class="home-section live-section"
+                data-live-section
+            >
+                <div class="section-title section-title--light">
+                    <span></span>
+                    <h2>Assista ao Vivo</h2>
+                    <span></span>
+                </div>
+
+                <div class="live-section__content">
+                    <div
+                        class="live-section__player"
+                        aria-label="Player do YouTube da Paróquia"
+                        data-live-player
+                    ></div>
+
+                    <div class="live-section__info">
+                        <p class="live-section__eyebrow">Canal da Paróquia</p>
+                        <h3>Paróquia Nossa Senhora do Carmo</h3>
+                        <p>
+                            Acompanhe as Missas, celebrações e transmissões pelo
+                            canal oficial da paróquia no YouTube.
+                        </p>
+                        <a
+                            class="live-section__link"
+                            href="#assista-ao-vivo"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            data-live-channel-link
+                        >
+                            Ver canal no YouTube
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <section
+                id="missa-dos-impossiveis"
+                class="home-section impossible-mass-section"
+                aria-labelledby="impossible-mass-title"
+                data-impossible-mass
+            >
+                <div class="impossible-mass__content">
+                    <div class="impossible-mass__text">
+                        <p class="impossible-mass__eyebrow">
+                            Santa Missa votiva ao Glorioso São José
+                        </p>
+                        <h2 id="impossible-mass-title">
+                            Missa dos Impossíveis
+                        </h2>
+
+                        <div
+                            class="impossible-mass__schedule"
+                            aria-label="Data e horário da Missa dos Impossíveis"
+                        >
+                            <span>
+                                <small>Todo dia</small>
+                                Dia 19
+                            </span>
+                            <strong>19h</strong>
+                        </div>
+                    </div>
+
+                    <figure class="impossible-mass__saint">
+                        <img
+                            src="./assets/images/missa-impossiveis/sao-jose.png"
+                            alt="São José segurando o Menino Jesus e o cajado com lírios"
+                        />
+                    </figure>
+
+                    <div class="impossible-mass__details">
+                        <div class="impossible-mass__place">
+                            <span>Igreja Matriz</span>
+                            <strong>Paróquia Nossa Senhora do Carmo</strong>
+                        </div>
+
+                        <p class="impossible-mass__description">
+                            Antes da bênção final, o Santíssimo Sacramento, no
+                            ostensório, passa pelos corredores da Igreja Matriz.
+                        </p>
+
+                        <a
+                            class="live-section__link impossible-mass__location-link"
+                            href="#missa-dos-impossiveis"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            hidden
+                            data-impossible-mass-location
+                        >
+                            Ver localização
+                        </a>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <div
@@ -237,6 +334,8 @@
         <script src="./js/igrejas-data.js"></script>
         <script src="./js/carousel.js"></script>
         <script src="./js/comunidades.js"></script>
+        <script src="./js/assista-ao-vivo.js"></script>
+        <script src="./js/missa-impossiveis.js"></script>
         <script src="./js/fade.js"></script>
         <script src="./js/main.js"></script>
     </body>

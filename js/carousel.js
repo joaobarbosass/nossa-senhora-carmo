@@ -29,6 +29,8 @@ if (heroCarousel && churchSlides.length) {
     let isPointerDown = false;
     let communityNavigationActive = false;
     let communityNavigationFrame = null;
+    let isHeroInView = true;
+    let isPageVisible = !document.hidden;
 
     const slideElements = churchSlides.map((slide, index) => {
         const image = document.createElement("img");
@@ -123,9 +125,16 @@ if (heroCarousel && churchSlides.length) {
         goToSlide(currentIndex - 1);
     }
 
+    function canAutoplay() {
+        return isHeroInView && isPageVisible && !communityNavigationActive;
+    }
+
     function startAutoplay() {
         clearInterval(autoplayTimer);
         clearTimeout(resumeTimer);
+
+        if (!canAutoplay()) return;
+
         autoplayTimer = setInterval(nextSlide, AUTOPLAY_DELAY);
     }
 
@@ -136,6 +145,8 @@ if (heroCarousel && churchSlides.length) {
 
     function pauseAfterInteraction() {
         pauseAutoplay();
+
+        if (!canAutoplay()) return;
 
         resumeTimer = setTimeout(startAutoplay, INTERACTION_PAUSE);
     }
@@ -289,8 +300,21 @@ if (heroCarousel && churchSlides.length) {
     heroCarousel.addEventListener("focusout", pauseAfterInteraction);
 
     document.addEventListener("visibilitychange", () => {
-        document.hidden ? pauseAutoplay() : pauseAfterInteraction();
+        isPageVisible = !document.hidden;
+        isPageVisible ? pauseAfterInteraction() : pauseAutoplay();
     });
+
+    if ("IntersectionObserver" in window) {
+        const heroVisibilityObserver = new IntersectionObserver(
+            ([entry]) => {
+                isHeroInView = entry.isIntersecting;
+                isHeroInView ? pauseAfterInteraction() : pauseAutoplay();
+            },
+            { threshold: 0.15 },
+        );
+
+        heroVisibilityObserver.observe(heroCarousel);
+    }
 
     heroCarousel.addEventListener("pointerup", (event) => {
         if (!isPointerDown) return;

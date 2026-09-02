@@ -3,12 +3,12 @@ window.igrejasComunidades = [
         id: "matriz",
         nome: "Paróquia Nossa Senhora do Carmo",
         subtitulo: "Igreja Matriz",
-        imagemPrincipal: "assets/images/igrejas/nsra-carmo/Sacrario.jpg",
+        imagemPrincipal: "assets/images/igrejas/nsra-carmo/hero.jpg",
         imagemAlt: "Paróquia Nossa Senhora do Carmo",
         objectPosition: "center center",
         galeria: [
             {
-                src: "assets/images/igrejas/nsra-carmo/Sacrario.jpg",
+                src: "assets/images/igrejas/nsra-carmo/hero.jpg",
                 alt: "Paróquia Nossa Senhora do Carmo",
                 objectPosition: "center center",
             },
@@ -50,8 +50,9 @@ window.igrejasComunidades = [
                 observacao: "",
             },
         ],
-        endereco: "",
-        googleMaps: "",
+        endereco: "Praça Nossa Senhora do Carmo, 10 - Centro, Monte Carmelo/MG",
+        googleMaps:
+            "https://www.google.com/maps/search/?api=1&query=Par%C3%B3quia+Nossa+Senhora+do+Carmo%2C+Pra%C3%A7a+Nossa+Senhora+do+Carmo%2C+10%2C+Monte+Carmelo+-+MG",
         waze: "",
     },
     {

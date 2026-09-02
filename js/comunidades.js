@@ -46,6 +46,7 @@ const comunidadesPorId = new Map(
 const GALLERY_AUTOPLAY_DELAY = 6200;
 const GALLERY_INTERACTION_PAUSE = 7000;
 const GALLERY_SWIPE_THRESHOLD = 45;
+const MODAL_CLOSE_TRANSITION_DELAY = 240;
 
 let comunidadeAtual = null;
 let galleryIndex = 0;
@@ -139,11 +140,17 @@ function lockModalScroll() {
 }
 
 function unlockModalScroll() {
+    const scrollY = modalLockedScrollY;
+
     document.body.classList.remove("community-modal-open");
     document.body.style.removeProperty("--modal-locked-scroll-y");
     document.body.style.removeProperty("--modal-page-scrollbar-width");
 
-    window.scrollTo(0, modalLockedScrollY);
+    window.scrollTo(0, scrollY);
+
+    requestAnimationFrame(() => {
+        window.scrollTo(0, scrollY);
+    });
 }
 
 /* =============================================
@@ -307,9 +314,9 @@ function closeModal() {
             modalLastFocusedElement &&
             document.contains(modalLastFocusedElement)
         ) {
-            modalLastFocusedElement.focus();
+            modalLastFocusedElement.focus({ preventScroll: true });
         }
-    }, 280);
+    }, MODAL_CLOSE_TRANSITION_DELAY);
 }
 
 function abrirModalIgreja(id) {
