@@ -174,7 +174,7 @@ function finishInternalNavigation(link, href) {
     link.classList.remove(MENU_LINK_LOADING);
     link.classList.add(MENU_LINK_COMPLETED);
 
-    closeMenu();
+    closeMenu({ keepHeaderVisible: false });
 
     if (!target) return;
 
@@ -200,7 +200,7 @@ function finishInternalNavigation(link, href) {
     });
 }
 
-function closeMenu() {
+function closeMenu({ keepHeaderVisible = true } = {}) {
     if (!nav) return;
 
     // remove delays/transições ao fechar
@@ -217,6 +217,12 @@ function closeMenu() {
     overlay?.classList.remove("active");
 
     unlockBackgroundScroll();
+
+    if (keepHeaderVisible) {
+        header?.classList.remove("header-hidden");
+        lastScrollY = lockedScrollY;
+    }
+
     toggle?.setAttribute("aria-expanded", "false");
     nav?.setAttribute("aria-hidden", "true");
     overlay?.setAttribute("aria-hidden", "true");

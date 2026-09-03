@@ -1,6 +1,7 @@
 :root {
     --header-height: 80px;
     --stable-viewport-height: 100vh;
+    --browser-safe-background: #543023;
     --scrim-background: rgba(22, 12, 9, 0.54);
     --scrim-blur: 3px;
     --scrim-transition: opacity 0.24s ease;
@@ -24,11 +25,16 @@
     }
 }
 
+html {
+    background-color: var(--browser-safe-background);
+}
+
 body {
     min-height: 100vh;
-    background-color: #f1e0dc;
+    background-color: var(--browser-safe-background);
     overflow-x: hidden;
     padding-top: var(--header-height);
+    padding-bottom: env(safe-area-inset-bottom, 0);
 
     /* Ajusta o scroll para links âncoras */
     scroll-padding-top: var(--header-height);
