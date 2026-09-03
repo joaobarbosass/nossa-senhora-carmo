@@ -208,6 +208,48 @@
                     </div>
                 </div>
             </section>
+
+            <section
+                id="fique-por-dentro"
+                class="home-section parish-agenda-section"
+                aria-labelledby="parish-agenda-title"
+                data-parish-agenda
+            >
+                <div class="section-title">
+                    <span></span>
+                    <h2 id="parish-agenda-title">Fique por Dentro</h2>
+                    <span></span>
+                </div>
+
+                <p class="parish-agenda__intro">
+                    Acompanhe os próximos acontecimentos da nossa Paróquia.
+                </p>
+
+                <div class="parish-agenda__content">
+                    <aside
+                        class="parish-agenda__week"
+                        aria-label="Período da semana atual"
+                    >
+                        <span>Esta semana</span>
+                        <strong data-agenda-week-start></strong>
+                        <small></small>
+                        <strong data-agenda-week-end></strong>
+                    </aside>
+
+                    <div class="parish-agenda__timeline" data-agenda-timeline>
+                    </div>
+                </div>
+
+                <div class="parish-agenda__actions">
+                    <button
+                        class="live-section__link parish-agenda__button"
+                        type="button"
+                        data-agenda-open
+                    >
+                        Ver todos os eventos
+                    </button>
+                </div>
+            </section>
         </main>
 
         <div
@@ -329,6 +371,45 @@
             </div>
         </section>
 
+        <div
+            class="agenda-modal-overlay"
+            aria-hidden="true"
+            hidden
+            data-agenda-modal-overlay
+        ></div>
+
+        <section
+            class="agenda-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="agenda-modal-title"
+            aria-hidden="true"
+            hidden
+            tabindex="-1"
+            data-agenda-modal
+        >
+            <div class="agenda-modal__dialog">
+                <button
+                    class="agenda-modal__close"
+                    type="button"
+                    aria-label="Fechar agenda da Paróquia"
+                    data-agenda-close
+                >
+                    <span class="material-symbols-outlined" aria-hidden="true">
+                        close
+                    </span>
+                </button>
+
+                <div class="agenda-modal__header">
+                    <p>Eventos e celebrações</p>
+                    <h3 id="agenda-modal-title">Agenda da Paróquia</h3>
+                </div>
+
+                <div class="agenda-modal__content" data-agenda-modal-content>
+                </div>
+            </div>
+        </section>
+
         <!-- Footer -->
         <div id="footer-container"></div>
 
@@ -341,6 +422,8 @@
         <script src="./js/comunidades.js"></script>
         <script src="./js/assista-ao-vivo.js"></script>
         <script src="./js/missa-impossiveis.js"></script>
+        <script src="./js/agenda-data.js"></script>
+        <script src="./js/fique-por-dentro.js"></script>
         <script src="./js/fade.js"></script>
         <script src="./js/main.js"></script>
     </body>
