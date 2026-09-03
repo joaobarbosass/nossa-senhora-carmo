@@ -23,7 +23,9 @@ header {
     position: fixed;
     top: 0;
     left: 0;
-    background: #624235;
+    background:
+        linear-gradient(135deg, rgba(36, 22, 16, 0.3), rgba(98, 66, 53, 0.12)),
+        #543023;
     z-index: 1250;
     padding: 0 10px;
 
