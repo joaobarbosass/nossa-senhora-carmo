@@ -253,6 +253,47 @@
                     </button>
                 </div>
             </section>
+
+            <section
+                id="videos"
+                class="home-section parish-videos-section"
+                aria-labelledby="parish-videos-title"
+                data-parish-videos
+            >
+                <div class="section-title">
+                    <span></span>
+                    <h2 id="parish-videos-title">Vídeos</h2>
+                    <span></span>
+                </div>
+
+                <p class="parish-videos__intro">
+                    Conheça um pouco mais da nossa Paróquia.
+                </p>
+
+                <div class="parish-videos__group">
+                    <div class="parish-videos__heading">
+                        <span>Vitrais</span>
+                    </div>
+
+                    <div
+                        class="parish-videos__stained-grid"
+                        aria-label="Vitrais da Paróquia"
+                        data-stained-glass-grid
+                    ></div>
+                </div>
+
+                <div class="parish-videos__group">
+                    <div class="parish-videos__heading">
+                        <span>Outros vídeos</span>
+                    </div>
+
+                    <div
+                        class="parish-videos__grid"
+                        aria-label="Vídeos da Paróquia"
+                        data-videos-grid
+                    ></div>
+                </div>
+            </section>
         </main>
 
         <div
@@ -413,6 +454,52 @@
             </div>
         </section>
 
+        <div
+            class="video-modal-overlay"
+            aria-hidden="true"
+            hidden
+            data-video-modal-overlay
+        ></div>
+
+        <section
+            class="video-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="video-modal-title"
+            aria-hidden="true"
+            hidden
+            tabindex="-1"
+            data-video-modal
+        >
+            <div class="video-modal__dialog">
+                <button
+                    class="video-modal__close"
+                    type="button"
+                    aria-label="Fechar vídeo"
+                    data-video-modal-close
+                >
+                    <span class="material-symbols-outlined" aria-hidden="true">
+                        close
+                    </span>
+                </button>
+
+                <div class="video-modal__player" data-video-modal-player></div>
+
+                <div class="video-modal__info">
+                    <h3 id="video-modal-title" data-video-modal-title></h3>
+
+                    <a
+                        class="live-section__link video-modal__link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-video-modal-youtube
+                    >
+                        Assistir no YouTube
+                    </a>
+                </div>
+            </div>
+        </section>
+
         <!-- Footer -->
         <div id="footer-container"></div>
 
@@ -427,6 +514,8 @@
         <script src="./js/missa-impossiveis.js"></script>
         <script src="./js/agenda-data.js"></script>
         <script src="./js/fique-por-dentro.js"></script>
+        <script src="./js/videos-data.js"></script>
+        <script src="./js/videos.js"></script>
         <script src="./js/fade.js"></script>
         <script src="./js/main.js"></script>
     </body>

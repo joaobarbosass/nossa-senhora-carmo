@@ -1161,6 +1161,320 @@ body.agenda-modal-open {
 }
 
 /* ==========================================
+   VIDEOS
+   ========================================== */
+
+.parish-videos-section {
+    padding-top: 42px;
+    background: #f1e0dc;
+    color: #543023;
+}
+
+.parish-videos__intro {
+    max-width: 620px;
+    margin: -12px auto 42px;
+    color: #624235;
+    font-family: hartwell;
+    font-size: 19px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.parish-videos__group {
+    width: min(1120px, 100%);
+    margin: 0 auto;
+}
+
+.parish-videos__group + .parish-videos__group {
+    margin-top: 54px;
+}
+
+.parish-videos__heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.parish-videos__heading::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(212, 175, 55, 0.5);
+}
+
+.parish-videos__heading span {
+    color: #9f7f23;
+    font-family: hartwell;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.parish-videos__stained-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.stained-glass-card,
+.parish-video-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(98, 66, 53, 0.12);
+    border-radius: 8px;
+    background: rgba(255, 247, 240, 0.88);
+    box-shadow: 0 14px 34px rgba(98, 66, 53, 0.1);
+    transition:
+        transform 0.28s ease,
+        box-shadow 0.28s ease,
+        border-color 0.28s ease;
+}
+
+.stained-glass-card {
+    display: flex;
+    flex-direction: column;
+    color: inherit;
+    text-decoration: none;
+}
+
+.stained-glass-card:focus-visible,
+.parish-video-card:focus-within {
+    transform: translateY(-6px);
+    border-color: rgba(212, 175, 55, 0.55);
+    box-shadow: 0 18px 42px rgba(98, 66, 53, 0.18);
+    outline: none;
+}
+
+.stained-glass-card:active,
+.stained-glass-card.is-tap-feedback,
+.parish-video-card:active,
+.parish-video-card.is-tap-feedback {
+    transform: scale(0.99);
+}
+
+.stained-glass-card__image,
+.parish-video-card__image {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background:
+        linear-gradient(135deg, rgba(98, 66, 53, 0.9), rgba(36, 22, 16, 0.9)),
+        #543023;
+}
+
+.stained-glass-card__image img,
+.parish-video-card__image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.stained-glass-card__image::after,
+.parish-video-card__image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(36, 22, 16, 0.28), transparent 54%);
+    pointer-events: none;
+}
+
+.stained-glass-card__content,
+.parish-video-card__content {
+    display: grid;
+    gap: 14px;
+    padding: 18px;
+}
+
+.stained-glass-card__content strong,
+.parish-video-card__content h3 {
+    margin: 0;
+    color: #543023;
+    font-family: hartwell;
+    font-size: 20px;
+    line-height: 1.16;
+    text-transform: uppercase;
+}
+
+.stained-glass-card__content span {
+    color: #9f7f23;
+    font-family: hartwell;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.parish-videos__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.parish-video-card {
+    display: grid;
+    align-content: start;
+    cursor: pointer;
+}
+
+.parish-video-card__button {
+    justify-self: start;
+    margin-top: 0;
+    cursor: pointer;
+}
+
+.parish-videos__empty {
+    grid-column: 1 / -1;
+    padding: 30px;
+    border: 1px solid rgba(98, 66, 53, 0.12);
+    border-radius: 8px;
+    background: rgba(255, 247, 240, 0.82);
+    color: #624235;
+    font-family: hartwell;
+    font-size: 18px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+/* ==========================================
+   MODAL VIDEO
+   ========================================== */
+
+body.video-modal-open {
+    position: fixed;
+    top: calc(var(--video-modal-locked-scroll-y, 0px) * -1);
+    left: 0;
+    width: calc(100% - var(--video-modal-page-scrollbar-width, 0px));
+    overflow: hidden;
+}
+
+.video-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3500;
+    background: var(--scrim-background);
+    opacity: 0;
+    pointer-events: none;
+    transition: var(--scrim-transition);
+    backdrop-filter: blur(var(--scrim-blur));
+    -webkit-backdrop-filter: blur(var(--scrim-blur));
+}
+
+.video-modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.video-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 3600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+}
+
+.video-modal.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.video-modal:focus {
+    outline: none;
+}
+
+.video-modal__dialog {
+    position: relative;
+    display: grid;
+    gap: 22px;
+    width: min(980px, 100%);
+    max-height: min(760px, calc(100dvh - 48px));
+    padding: 28px;
+    overflow-y: auto;
+    border: 1px solid rgba(212, 175, 55, 0.28);
+    border-radius: 8px;
+    background: #f1e0dc;
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.32);
+}
+
+.video-modal__close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    border: 1px solid rgba(241, 224, 220, 0.18);
+    border-radius: 8px;
+    background: rgba(36, 22, 16, 0.58);
+    color: #f1e0dc;
+    cursor: pointer;
+    transition:
+        background 0.24s ease,
+        border-color 0.24s ease,
+        color 0.24s ease,
+        transform 0.18s ease;
+}
+
+.video-modal__close:focus-visible {
+    background: rgba(36, 22, 16, 0.76);
+    border-color: rgba(212, 175, 55, 0.72);
+    color: #d4af37;
+    outline: none;
+}
+
+.video-modal__close:active,
+.video-modal__close.is-tap-feedback {
+    transform: scale(0.96);
+}
+
+.video-modal__player {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: 8px;
+    background:
+        linear-gradient(135deg, rgba(36, 22, 16, 0.92), rgba(80, 45, 34, 0.92)),
+        #241610;
+}
+
+.video-modal__player iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: 0;
+}
+
+.video-modal__info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.video-modal__info h3 {
+    margin: 0;
+    color: #543023;
+    font-family: hartwell;
+    font-size: clamp(24px, 3.2vw, 36px);
+    line-height: 1.08;
+    text-transform: uppercase;
+}
+
+.video-modal__link {
+    flex-shrink: 0;
+    margin-top: 0;
+}
+
+/* ==========================================
    MODAL COMUNIDADES
    ========================================== */
 
@@ -1589,6 +1903,19 @@ body.community-modal-open .page-content {
         border-color: rgba(212, 175, 55, 0.72);
         color: #d4af37;
     }
+
+    .stained-glass-card:hover,
+    .parish-video-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(212, 175, 55, 0.55);
+        box-shadow: 0 18px 42px rgba(98, 66, 53, 0.18);
+    }
+
+    .video-modal__close:hover {
+        background: rgba(36, 22, 16, 0.76);
+        border-color: rgba(212, 175, 55, 0.72);
+        color: #d4af37;
+    }
 }
 
 @keyframes hero-title-in {
@@ -1767,6 +2094,31 @@ body.community-modal-open .page-content {
     .agenda-modal__content {
         padding: 24px;
     }
+
+    .parish-videos__stained-grid,
+    .parish-videos__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .video-modal {
+        align-items: stretch;
+        padding: 14px;
+    }
+
+    .video-modal__dialog {
+        align-content: start;
+        max-height: calc(100dvh - 28px);
+        padding: 22px;
+    }
+
+    .video-modal__info {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .video-modal__link {
+        width: 100%;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1791,6 +2143,10 @@ body.community-modal-open .page-content {
 
     .home-section {
         padding: 56px 14px;
+    }
+
+    .parish-videos-section {
+        padding-top: 34px;
     }
 
     .section-title {
@@ -1984,6 +2340,43 @@ body.community-modal-open .page-content {
     .agenda-modal__content {
         padding: 20px;
     }
+
+    .parish-videos__intro {
+        margin-bottom: 30px;
+        font-size: 17px;
+    }
+
+    .parish-videos__group + .parish-videos__group {
+        margin-top: 42px;
+    }
+
+    .parish-videos__stained-grid,
+    .parish-videos__grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .stained-glass-card__content,
+    .parish-video-card__content {
+        padding: 16px;
+    }
+
+    .parish-video-card__button {
+        width: 100%;
+    }
+
+    .video-modal__close {
+        top: 12px;
+        right: 12px;
+    }
+
+    .video-modal__dialog {
+        padding: 18px;
+    }
+
+    .video-modal__player {
+        margin-top: 44px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2003,6 +2396,13 @@ body.community-modal-open .page-content {
     .agenda-modal,
     .agenda-modal-overlay,
     .agenda-modal__close,
+    .stained-glass-card,
+    .stained-glass-card__image img,
+    .parish-video-card,
+    .parish-video-card__image img,
+    .video-modal,
+    .video-modal-overlay,
+    .video-modal__close,
     .community-modal,
     .community-modal-overlay,
     .community-gallery__slide,
