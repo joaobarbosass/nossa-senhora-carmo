@@ -127,6 +127,7 @@ function lockModalScroll() {
         window.innerWidth - document.documentElement.clientWidth;
 
     modalLockedScrollY = window.scrollY;
+    window.__suspendHeaderVisibility = true;
 
     document.body.style.setProperty(
         "--modal-locked-scroll-y",
@@ -150,6 +151,10 @@ function unlockModalScroll() {
 
     requestAnimationFrame(() => {
         window.scrollTo(0, scrollY);
+
+        requestAnimationFrame(() => {
+            window.__suspendHeaderVisibility = false;
+        });
     });
 }
 

@@ -182,10 +182,17 @@ function finishInternalNavigation(link, href) {
     clearTimeout(menuScrollTimeout);
 
     requestAnimationFrame(() => {
-        target.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-        });
+        if (href === "#inicio") {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+            });
+        } else {
+            target.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            });
+        }
 
         menuScrollTimeout = setTimeout(() => {
             menuScrollActive = false;
@@ -442,9 +449,23 @@ function isHeroStillInView() {
     return heroSection.getBoundingClientRect().bottom > getHeaderHeight();
 }
 
+function isHeaderVisibilitySuspended() {
+    return (
+        window.__suspendHeaderVisibility ||
+        document.body.classList.contains("community-modal-open")
+    );
+}
+
 function updateHeaderVisibility() {
     const currentY = window.scrollY;
     const delta = currentY - lastScrollY;
+
+    if (isHeaderVisibilitySuspended()) {
+        lastScrollY = currentY;
+        scrollTicking = false;
+
+        return;
+    }
 
     if (isDesktopHeaderFixed()) {
         header?.classList.remove("header-hidden");

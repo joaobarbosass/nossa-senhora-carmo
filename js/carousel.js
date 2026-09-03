@@ -20,6 +20,8 @@ if (heroCarousel && churchSlides.length) {
     const AUTOPLAY_DELAY = 5200;
     const INTERACTION_PAUSE = 6500;
     const SWIPE_THRESHOLD = 45;
+    const TRACKPAD_SWIPE_THRESHOLD = 52;
+    const TRACKPAD_SWIPE_COOLDOWN = 650;
 
     let currentIndex = 0;
     let autoplayTimer = null;
@@ -31,6 +33,7 @@ if (heroCarousel && churchSlides.length) {
     let communityNavigationFrame = null;
     let isHeroInView = true;
     let isPageVisible = !document.hidden;
+    let lastTrackpadSwipeTime = 0;
 
     const slideElements = churchSlides.map((slide, index) => {
         const image = document.createElement("img");
@@ -276,24 +279,12 @@ if (heroCarousel && churchSlides.length) {
     communityCta?.addEventListener("click", navigateToCurrentCommunity);
 
     heroCarousel.addEventListener("pointerdown", (event) => {
-        if (event.pointerType === "mouse" && event.button !== 0) return;
+        if (event.pointerType === "mouse") return;
 
         isPointerDown = true;
         pointerStartX = event.clientX;
         pointerStartY = event.clientY;
         pauseAfterInteraction();
-    });
-
-    heroCarousel.addEventListener("pointerenter", (event) => {
-        if (event.pointerType === "mouse") {
-            pauseAutoplay();
-        }
-    });
-
-    heroCarousel.addEventListener("pointerleave", (event) => {
-        if (event.pointerType === "mouse") {
-            pauseAfterInteraction();
-        }
     });
 
     heroCarousel.addEventListener("focusin", pauseAutoplay);
@@ -315,6 +306,28 @@ if (heroCarousel && churchSlides.length) {
 
         heroVisibilityObserver.observe(heroCarousel);
     }
+
+    heroCarousel.addEventListener(
+        "wheel",
+        (event) => {
+            const horizontalMovement = Math.abs(event.deltaX);
+            const verticalMovement = Math.abs(event.deltaY);
+
+            if (horizontalMovement < TRACKPAD_SWIPE_THRESHOLD) return;
+            if (verticalMovement > horizontalMovement) return;
+
+            const now = Date.now();
+
+            if (now - lastTrackpadSwipeTime < TRACKPAD_SWIPE_COOLDOWN) return;
+
+            event.preventDefault();
+            lastTrackpadSwipeTime = now;
+            pauseAfterInteraction();
+
+            event.deltaX > 0 ? nextSlide() : previousSlide();
+        },
+        { passive: false },
+    );
 
     heroCarousel.addEventListener("pointerup", (event) => {
         if (!isPointerDown) return;
