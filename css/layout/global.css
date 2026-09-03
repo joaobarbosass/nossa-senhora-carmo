@@ -27,6 +27,7 @@
 
 html {
     background-color: var(--browser-safe-background);
+    overflow-x: hidden;
 }
 
 body {

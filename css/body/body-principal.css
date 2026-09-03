@@ -242,7 +242,6 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    min-height: 330px;
     scroll-margin-top: calc(var(--header-height) + 24px);
     padding: 0;
     overflow: hidden;
@@ -296,8 +295,9 @@
 .comunidade-card__image {
     position: relative;
     display: block;
-    flex: 1;
-    min-height: 230px;
+    flex: 0 0 auto;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
     background:
         linear-gradient(135deg, rgba(98, 66, 53, 0.9), rgba(36, 22, 16, 0.9)),
         #543023;
@@ -308,6 +308,8 @@
     height: 100%;
     display: block;
     object-fit: cover;
+    transform: scale(var(--community-image-scale, 1));
+    transform-origin: var(--community-image-origin, center center);
 }
 
 .comunidade-card__image--fallback::before {
@@ -1475,6 +1477,441 @@ body.video-modal-open {
 }
 
 /* ==========================================
+   NOSSO PAROCO
+   ========================================== */
+
+.parish-priest-section {
+    background:
+        linear-gradient(180deg, rgba(84, 48, 35, 0.08), transparent 34%),
+        #f1e0dc;
+    color: #543023;
+}
+
+.parish-priest__content {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(34px, 5vw, 68px);
+    width: min(1120px, 100%);
+    margin: clamp(30px, 4vw, 46px) auto 0;
+}
+
+.parish-priest__heading {
+    display: grid;
+    justify-items: center;
+    gap: 14px;
+    width: min(760px, 100%);
+    margin: 0 auto;
+    text-align: center;
+}
+
+.parish-priest__photo {
+    position: relative;
+    width: min(430px, 100%);
+    justify-self: center;
+    min-height: 0;
+    padding: 10px;
+    border: 1px solid rgba(212, 175, 55, 0.42);
+    border-radius: 8px;
+    background: rgba(255, 247, 240, 0.62);
+    box-shadow: 0 24px 58px rgba(84, 48, 35, 0.18);
+    isolation: isolate;
+}
+
+.parish-priest__photo::before {
+    content: none;
+}
+
+.parish-priest__photo img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    object-position: center center;
+    border-radius: 8px;
+    box-shadow: 0 14px 32px rgba(84, 48, 35, 0.16);
+}
+
+.parish-priest__info {
+    display: grid;
+    gap: 18px;
+}
+
+.parish-priest__role,
+.parish-priest__mission span,
+.priest-modal__header p,
+.priest-modal__section h4,
+.priest-modal__cards span,
+.priest-timeline span,
+.priest-modal__pastoral span {
+    color: #d4af37;
+    font-family: hartwell;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.parish-priest__heading h2 {
+    margin: 0;
+    color: #543023;
+    font-family: hartwell;
+    font-size: clamp(42px, 5.6vw, 72px);
+    line-height: 1;
+    text-transform: uppercase;
+    text-wrap: balance;
+}
+
+.parish-priest__subtitle {
+    max-width: 560px;
+    margin: 0;
+    color: rgba(84, 48, 35, 0.78);
+    font-family: hartwell;
+    font-size: 19px;
+    line-height: 1.45;
+}
+
+.parish-priest__info h3 {
+    margin: 8px 0 0;
+    color: #543023;
+    font-family: hartwell;
+    font-size: clamp(28px, 3.7vw, 44px);
+    line-height: 1.08;
+    text-transform: uppercase;
+}
+
+.parish-priest__role {
+    margin-top: -8px;
+}
+
+.parish-priest__description {
+    max-width: 620px;
+    margin: 0;
+    color: rgba(84, 48, 35, 0.88);
+    font-family: hartwell;
+    font-size: 19px;
+    line-height: 1.6;
+}
+
+.parish-priest__motto,
+.priest-modal__motto {
+    margin: 6px 0;
+    padding: 22px 24px;
+    border-left: 3px solid #d4af37;
+    border-radius: 8px;
+    background: rgba(36, 22, 16, 0.22);
+}
+
+.parish-priest__motto {
+    background: #543023;
+    box-shadow: 0 18px 38px rgba(84, 48, 35, 0.12);
+}
+
+.parish-priest__motto p,
+.priest-modal__motto p {
+    margin: 0;
+    color: #f1e0dc;
+    font-family: hartwell;
+    font-size: clamp(24px, 3vw, 34px);
+    line-height: 1.16;
+}
+
+.parish-priest__motto cite,
+.priest-modal__motto cite {
+    display: block;
+    margin-top: 8px;
+    color: #d4af37;
+    font-family: hartwell;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 800;
+}
+
+.parish-priest__mission {
+    display: inline-grid;
+    justify-items: start;
+    gap: 4px;
+    margin-top: 6px;
+    padding: 20px 24px;
+    border: 1px solid rgba(212, 175, 55, 0.34);
+    border-radius: 8px;
+    background: rgba(255, 247, 240, 0.74);
+    box-shadow: 0 16px 34px rgba(84, 48, 35, 0.1);
+}
+
+.parish-priest__mission strong {
+    color: #543023;
+    font-family: hartwell;
+    font-size: clamp(42px, 5vw, 62px);
+    line-height: 0.95;
+}
+
+.parish-priest__mission small {
+    color: rgba(84, 48, 35, 0.78);
+    font-family: hartwell;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.parish-priest__mission p {
+    margin: 8px 0 0;
+    color: rgba(84, 48, 35, 0.72);
+    font-family: hartwell;
+    font-size: 15px;
+}
+
+.parish-priest__button {
+    justify-self: start;
+    cursor: pointer;
+}
+
+/* ==========================================
+   MODAL PAROCO
+   ========================================== */
+
+body.priest-modal-open {
+    position: fixed;
+    top: calc(var(--priest-modal-locked-scroll-y, 0px) * -1);
+    left: 0;
+    width: calc(100% - var(--priest-modal-page-scrollbar-width, 0px));
+    overflow: hidden;
+}
+
+.priest-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3500;
+    background: var(--scrim-background);
+    opacity: 0;
+    pointer-events: none;
+    transition: var(--scrim-transition);
+    backdrop-filter: blur(var(--scrim-blur));
+    -webkit-backdrop-filter: blur(var(--scrim-blur));
+}
+
+.priest-modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.priest-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 3600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+}
+
+.priest-modal.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.priest-modal:focus {
+    outline: none;
+}
+
+.priest-modal__dialog {
+    position: relative;
+    width: min(1040px, 100%);
+    max-height: min(780px, calc(100dvh - 48px));
+    overflow-y: auto;
+    border: 1px solid rgba(212, 175, 55, 0.28);
+    border-radius: 8px;
+    background: #f1e0dc;
+    color: #543023;
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.32);
+}
+
+.priest-modal__dialog::-webkit-scrollbar {
+    width: 8px;
+}
+
+.priest-modal__dialog::-webkit-scrollbar-track {
+    background: rgba(98, 66, 53, 0.08);
+}
+
+.priest-modal__dialog::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(98, 66, 53, 0.42);
+}
+
+.priest-modal__close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    border: 1px solid rgba(241, 224, 220, 0.18);
+    border-radius: 8px;
+    background: rgba(36, 22, 16, 0.58);
+    color: #f1e0dc;
+    cursor: pointer;
+    transition:
+        background 0.24s ease,
+        border-color 0.24s ease,
+        color 0.24s ease,
+        transform 0.18s ease;
+}
+
+.priest-modal__close:focus-visible {
+    background: rgba(36, 22, 16, 0.76);
+    border-color: rgba(212, 175, 55, 0.72);
+    color: #d4af37;
+    outline: none;
+}
+
+.priest-modal__close:active,
+.priest-modal__close.is-tap-feedback {
+    transform: scale(0.96);
+}
+
+.priest-modal__content {
+    display: grid;
+    gap: 28px;
+    padding: 34px;
+}
+
+.priest-modal__header {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    align-items: center;
+    gap: 26px;
+    padding-right: 64px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid rgba(98, 66, 53, 0.14);
+}
+
+.priest-modal__header img {
+    width: 180px;
+    aspect-ratio: 4 / 5;
+    display: block;
+    object-fit: cover;
+    object-position: 50% 32%;
+    border-radius: 8px;
+    box-shadow: 0 18px 38px rgba(98, 66, 53, 0.18);
+}
+
+.priest-modal__header p,
+.priest-modal__header h3,
+.priest-modal__header span {
+    margin: 0;
+}
+
+.priest-modal__header h3 {
+    margin: 8px 0;
+    color: #543023;
+    font-family: hartwell;
+    font-size: clamp(30px, 4vw, 44px);
+    line-height: 1.05;
+    text-transform: uppercase;
+}
+
+.priest-modal__header span {
+    color: #624235;
+    font-family: hartwell;
+    font-size: 17px;
+    line-height: 1.45;
+}
+
+.priest-modal__motto {
+    background: #543023;
+}
+
+.priest-modal__section {
+    display: grid;
+    gap: 18px;
+}
+
+.priest-modal__section h4 {
+    margin: 0;
+    color: #9f7f23;
+}
+
+.priest-modal__cards,
+.priest-modal__pastoral {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.priest-modal__cards article,
+.priest-modal__pastoral article {
+    display: grid;
+    gap: 8px;
+    padding: 18px;
+    border: 1px solid rgba(98, 66, 53, 0.12);
+    border-radius: 8px;
+    background: rgba(255, 247, 240, 0.76);
+}
+
+.priest-modal__cards strong,
+.priest-modal__pastoral strong,
+.priest-timeline strong {
+    color: #543023;
+    font-family: hartwell;
+    font-size: 18px;
+    line-height: 1.25;
+}
+
+.priest-modal__cards p,
+.priest-modal__pastoral p,
+.priest-timeline p {
+    margin: 0;
+    color: #624235;
+    font-family: hartwell;
+    font-size: 15px;
+    line-height: 1.45;
+}
+
+.priest-timeline {
+    position: relative;
+    display: grid;
+    gap: 16px;
+}
+
+.priest-timeline::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 9px;
+    width: 1px;
+    background: rgba(98, 66, 53, 0.16);
+}
+
+.priest-timeline article {
+    position: relative;
+    display: grid;
+    gap: 4px;
+    padding-left: 34px;
+}
+
+.priest-timeline article::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 0;
+    z-index: 1;
+    width: 19px;
+    height: 19px;
+    border: 1px solid rgba(212, 175, 55, 0.7);
+    border-radius: 50%;
+    background: #f1e0dc;
+    box-shadow: inset 0 0 0 6px #d4af37;
+}
+
+/* ==========================================
    MODAL COMUNIDADES
    ========================================== */
 
@@ -1516,6 +1953,7 @@ body.community-modal-open .page-content {
     justify-content: center;
     align-items: center;
     padding: 24px;
+    overflow-x: hidden;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.22s ease;
@@ -1535,7 +1973,9 @@ body.community-modal-open .page-content {
     display: grid;
     grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
     width: min(1120px, 100%);
+    max-width: calc(100vw - 48px);
     max-height: min(760px, calc(100dvh - 48px));
+    min-width: 0;
     overflow: hidden;
     border: 1px solid rgba(212, 175, 55, 0.28);
     border-radius: 8px;
@@ -1579,7 +2019,8 @@ body.community-modal-open .page-content {
 
 .community-modal__gallery {
     position: relative;
-    min-height: 560px;
+    min-height: 0;
+    aspect-ratio: 4 / 3;
     overflow: hidden;
     background: #543023;
 }
@@ -1617,6 +2058,8 @@ body.community-modal-open .page-content {
     height: 100%;
     display: block;
     object-fit: cover;
+    transform: scale(var(--community-image-scale, 1));
+    transform-origin: var(--community-image-origin, center center);
 }
 
 .community-gallery__button {
@@ -1694,10 +2137,21 @@ body.community-modal-open .page-content {
     flex-direction: column;
     gap: 20px;
     max-height: min(760px, calc(100dvh - 48px));
+    min-width: 0;
     padding: 56px 34px 34px;
     overflow-y: auto;
+    overflow-x: hidden;
     background: #f1e0dc;
     color: #543023;
+}
+
+.community-modal__info > *,
+.community-info-group,
+.community-schedule-list,
+.community-schedule-item,
+.community-special-item,
+.community-modal__actions {
+    min-width: 0;
 }
 
 .community-modal__subtitle {
@@ -1715,6 +2169,7 @@ body.community-modal-open .page-content {
     font-size: clamp(28px, 4vw, 42px);
     line-height: 1.05;
     text-transform: uppercase;
+    overflow-wrap: break-word;
 }
 
 .community-info-group {
@@ -1738,6 +2193,7 @@ body.community-modal-open .page-content {
     color: #543023;
     font-size: 16px;
     line-height: 1.5;
+    overflow-wrap: break-word;
 }
 
 .community-schedule-list {
@@ -1818,6 +2274,7 @@ body.community-modal-open .page-content {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    max-width: 100%;
     min-height: 46px;
     padding: 12px 16px;
     border: 1px solid rgba(212, 175, 55, 0.45);
@@ -1827,8 +2284,10 @@ body.community-modal-open .page-content {
     font-family: hartwell;
     font-size: 13px;
     font-weight: 700;
+    text-align: center;
     text-decoration: none;
     text-transform: uppercase;
+    white-space: normal;
     transition:
         background 0.24s ease,
         border-color 0.24s ease,
@@ -1916,6 +2375,12 @@ body.community-modal-open .page-content {
         border-color: rgba(212, 175, 55, 0.72);
         color: #d4af37;
     }
+
+    .priest-modal__close:hover {
+        background: rgba(36, 22, 16, 0.76);
+        border-color: rgba(212, 175, 55, 0.72);
+        color: #d4af37;
+    }
 }
 
 @keyframes hero-title-in {
@@ -1960,10 +2425,6 @@ body.community-modal-open .page-content {
 
     .comunidades-grid {
         grid-template-columns: 1fr;
-    }
-
-    .comunidade-card {
-        min-height: 300px;
     }
 
     .live-section__content {
@@ -2032,18 +2493,21 @@ body.community-modal-open .page-content {
 
     .community-modal__dialog {
         grid-template-columns: 1fr;
+        max-width: calc(100vw - 28px);
         max-height: calc(100dvh - 28px);
         overflow-y: auto;
+        overflow-x: hidden;
     }
 
     .community-modal__gallery {
-        min-height: 320px;
+        aspect-ratio: 4 / 3;
     }
 
     .community-modal__info {
         max-height: none;
         padding: 28px 22px 24px;
-        overflow: visible;
+        overflow-y: visible;
+        overflow-x: hidden;
     }
 
     .community-modal__actions {
@@ -2119,6 +2583,68 @@ body.community-modal-open .page-content {
     .video-modal__link {
         width: 100%;
     }
+
+    .parish-priest__content {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+
+    .parish-priest__photo {
+        width: min(430px, 100%);
+    }
+
+    .parish-priest__photo img {
+        height: auto;
+    }
+
+    .parish-priest__info {
+        text-align: center;
+    }
+
+    .parish-priest__description {
+        margin: 0 auto;
+    }
+
+    .parish-priest__subtitle {
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+    .parish-priest__motto {
+        text-align: left;
+    }
+
+    .parish-priest__mission,
+    .parish-priest__button {
+        justify-self: center;
+    }
+
+    .priest-modal {
+        align-items: stretch;
+        padding: 14px;
+    }
+
+    .priest-modal__dialog {
+        max-height: calc(100dvh - 28px);
+    }
+
+    .priest-modal__content {
+        padding: 28px 24px;
+    }
+
+    .priest-modal__header {
+        grid-template-columns: 140px minmax(0, 1fr);
+        gap: 20px;
+    }
+
+    .priest-modal__header img {
+        width: 140px;
+    }
+
+    .priest-modal__cards,
+    .priest-modal__pastoral {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 480px) {
@@ -2156,10 +2682,6 @@ body.community-modal-open .page-content {
 
     .section-title span {
         max-width: 72px;
-    }
-
-    .comunidade-card {
-        min-height: 270px;
     }
 
     .comunidade-card__content {
@@ -2377,6 +2899,75 @@ body.community-modal-open .page-content {
     .video-modal__player {
         margin-top: 44px;
     }
+
+    .parish-priest__content {
+        gap: 26px;
+    }
+
+    .parish-priest__photo img {
+        height: auto;
+    }
+
+    .parish-priest__heading h2 {
+        font-size: clamp(34px, 12vw, 48px);
+    }
+
+    .parish-priest__subtitle {
+        font-size: 17px;
+    }
+
+    .parish-priest__info h3 {
+        font-size: clamp(26px, 9vw, 36px);
+    }
+
+    .parish-priest__description {
+        font-size: 17px;
+    }
+
+    .parish-priest__motto,
+    .priest-modal__motto {
+        padding: 18px;
+    }
+
+    .parish-priest__mission {
+        width: 100%;
+        justify-items: center;
+        text-align: center;
+    }
+
+    .parish-priest__button {
+        width: 100%;
+    }
+
+    .priest-modal__close {
+        top: 12px;
+        right: 12px;
+    }
+
+    .priest-modal__content {
+        gap: 22px;
+        padding: 24px 20px;
+    }
+
+    .priest-modal__header {
+        grid-template-columns: 1fr;
+        padding-right: 0;
+        padding-top: 42px;
+        text-align: center;
+    }
+
+    .priest-modal__header img {
+        width: min(220px, 72vw);
+        margin: 0 auto;
+    }
+
+    .priest-modal__header h3 {
+        font-size: clamp(28px, 10vw, 38px);
+    }
+
+    .priest-modal__motto {
+        text-align: left;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2403,6 +2994,12 @@ body.community-modal-open .page-content {
     .video-modal,
     .video-modal-overlay,
     .video-modal__close,
+    .parish-priest__photo img,
+    .parish-priest__motto,
+    .parish-priest__button,
+    .priest-modal,
+    .priest-modal-overlay,
+    .priest-modal__close,
     .community-modal,
     .community-modal-overlay,
     .community-gallery__slide,

@@ -10,6 +10,8 @@ const tapFeedbackSelector = [
     ".parish-video-card__button",
     ".video-modal__close",
     ".video-modal__link",
+    ".parish-priest__button",
+    ".priest-modal__close",
     ".community-modal__close",
     ".community-gallery__button",
     ".community-modal__link",

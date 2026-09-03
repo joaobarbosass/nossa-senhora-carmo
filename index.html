@@ -294,6 +294,70 @@
                     ></div>
                 </div>
             </section>
+
+            <section
+                id="nosso-paroco"
+                class="home-section parish-priest-section"
+                aria-labelledby="parish-priest-title"
+                data-parish-priest
+            >
+                <div class="parish-priest__heading">
+                    <h2 id="parish-priest-title">
+                        Nosso Pároco
+                    </h2>
+                    <p class="parish-priest__subtitle">
+                        Conheça o sacerdote que conduz nossa comunidade
+                        paroquial.
+                    </p>
+                </div>
+
+                <div class="parish-priest__content">
+                    <div class="parish-priest__photo">
+                        <img
+                            src="./assets/images/paroco/pe-artur.png"
+                            alt="Pe. Artur Nelson de Oliveira, Pároco da Paróquia Nossa Senhora do Carmo"
+                        />
+                    </div>
+
+                    <div class="parish-priest__info">
+                        <h3>
+                            Pe. Artur Nelson de Oliveira
+                        </h3>
+                        <p class="parish-priest__role">Pároco</p>
+
+                        <p class="parish-priest__description">
+                            Natural de Patrocínio/MG, Pe. Artur Nelson de
+                            Oliveira foi ordenado sacerdote em 4 de fevereiro de
+                            2017 e atualmente exerce seu ministério como Pároco
+                            da Paróquia Nossa Senhora do Carmo, em Monte
+                            Carmelo/MG.
+                        </p>
+
+                        <blockquote class="parish-priest__motto">
+                            <p>“Alegrai-vos sempre no Senhor!”</p>
+                            <cite>Fl 4,4</cite>
+                        </blockquote>
+
+                        <div
+                            class="parish-priest__mission"
+                            aria-label="Tempo em missão nesta Paróquia"
+                        >
+                            <span>Em missão nesta Paróquia</span>
+                            <strong data-priest-days>0</strong>
+                            <small>dias</small>
+                            <p>Pároco desde 8 de dezembro de 2021</p>
+                        </div>
+
+                        <button
+                            class="live-section__link parish-priest__button"
+                            type="button"
+                            data-priest-modal-open
+                        >
+                            Conheça nosso Pároco
+                        </button>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <div
@@ -500,6 +564,171 @@
             </div>
         </section>
 
+        <div
+            class="priest-modal-overlay"
+            aria-hidden="true"
+            hidden
+            data-priest-modal-overlay
+        ></div>
+
+        <section
+            class="priest-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="priest-modal-title"
+            aria-hidden="true"
+            hidden
+            tabindex="-1"
+            data-priest-modal
+        >
+            <div class="priest-modal__dialog">
+                <button
+                    class="priest-modal__close"
+                    type="button"
+                    aria-label="Fechar informações do Pároco"
+                    data-priest-modal-close
+                >
+                    <span class="material-symbols-outlined" aria-hidden="true">
+                        close
+                    </span>
+                </button>
+
+                <div class="priest-modal__content">
+                    <div class="priest-modal__header">
+                        <img
+                            src="./assets/images/paroco/pe-artur.png"
+                            alt="Pe. Artur Nelson de Oliveira"
+                        />
+
+                        <div>
+                            <p>Natural de Patrocínio/MG</p>
+                            <h3 id="priest-modal-title">
+                                Pe. Artur Nelson de Oliveira
+                            </h3>
+                            <span>
+                                Pároco da Paróquia Nossa Senhora do Carmo ·
+                                Monte Carmelo/MG
+                            </span>
+                        </div>
+                    </div>
+
+                    <blockquote class="priest-modal__motto">
+                        <p>“Alegrai-vos sempre no Senhor!”</p>
+                        <cite>Fl 4,4</cite>
+                    </blockquote>
+
+                    <section class="priest-modal__section">
+                        <h4>Formação e ordenação</h4>
+
+                        <div class="priest-modal__cards">
+                            <article>
+                                <span>2006–2008</span>
+                                <strong>
+                                    Seminário Menor Monsenhor Josias Tolentino
+                                    de Araújo
+                                </strong>
+                                <p>Patrocínio/MG</p>
+                            </article>
+
+                            <article>
+                                <span>2009–2011</span>
+                                <strong>Curso de Filosofia</strong>
+                                <p>
+                                    Seminário Maior Dom José André Coimbra ·
+                                    Patos de Minas/MG
+                                </p>
+                            </article>
+
+                            <article>
+                                <span>2012–2015</span>
+                                <strong>Curso de Teologia</strong>
+                                <p>
+                                    Seminário Maior Dom José André Coimbra ·
+                                    Patos de Minas/MG
+                                </p>
+                            </article>
+                        </div>
+                    </section>
+
+                    <section class="priest-modal__section">
+                        <h4>Linha do tempo</h4>
+
+                        <div class="priest-timeline">
+                            <article>
+                                <span>2006</span>
+                                <strong>
+                                    Início da formação no Seminário Menor
+                                </strong>
+                            </article>
+
+                            <article>
+                                <span>2009–2011</span>
+                                <strong>Curso de Filosofia</strong>
+                            </article>
+
+                            <article>
+                                <span>2012–2015</span>
+                                <strong>Curso de Teologia</strong>
+                            </article>
+
+                            <article>
+                                <span>26/08/2016</span>
+                                <strong>Ordenação Diaconal</strong>
+                                <p>
+                                    Igreja Nossa Senhora de Fátima ·
+                                    Patrocínio/MG
+                                </p>
+                            </article>
+
+                            <article>
+                                <span>04/02/2017</span>
+                                <strong>Ordenação Presbiteral</strong>
+                                <p>Igreja São Geraldo · Patrocínio/MG</p>
+                            </article>
+
+                            <article>
+                                <span>08/12/2021</span>
+                                <strong>
+                                    Pároco da Paróquia Nossa Senhora do Carmo
+                                </strong>
+                                <p>Monte Carmelo/MG</p>
+                            </article>
+                        </div>
+                    </section>
+
+                    <section class="priest-modal__section">
+                        <h4>Trajetória pastoral</h4>
+
+                        <div class="priest-modal__pastoral">
+                            <article>
+                                <span>04/02/2017</span>
+                                <strong>Vigário Paroquial</strong>
+                                <p>
+                                    Paróquia Nossa Senhora do Patrocínio ·
+                                    Patrocínio/MG
+                                </p>
+                            </article>
+
+                            <article>
+                                <span>22/11/2019</span>
+                                <strong>Vigário Paroquial</strong>
+                                <p>Paróquia Santa Terezinha · Patrocínio/MG</p>
+                            </article>
+
+                            <article>
+                                <span>08/12/2021</span>
+                                <strong>Pároco</strong>
+                                <p>
+                                    Paróquia Nossa Senhora do Carmo · Monte
+                                    Carmelo/MG
+                                </p>
+                            </article>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+
         <!-- Footer -->
         <div id="footer-container"></div>
 
@@ -516,6 +745,7 @@
         <script src="./js/fique-por-dentro.js"></script>
         <script src="./js/videos-data.js"></script>
         <script src="./js/videos.js"></script>
+        <script src="./js/paroco.js"></script>
         <script src="./js/fade.js"></script>
         <script src="./js/main.js"></script>
     </body>

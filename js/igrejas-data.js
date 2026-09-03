@@ -12,6 +12,16 @@ window.igrejasComunidades = [
                 alt: "Paróquia Nossa Senhora do Carmo",
                 objectPosition: "center center",
             },
+            {
+                src: "assets/images/igrejas/nsra-carmo/interior.jpg",
+                alt: "Paróquia Nossa Senhora do Carmo",
+                objectPosition: "center center",
+            },
+            {
+                src: "assets/images/igrejas/nsra-carmo/sacrario.jpg",
+                alt: "Paróquia Nossa Senhora do Carmo",
+                objectPosition: "center center",
+            },
         ],
         missas: [
             {
@@ -59,10 +69,21 @@ window.igrejasComunidades = [
         id: "menino-jesus",
         nome: "Igreja Menino Jesus",
         subtitulo: "",
-        imagemPrincipal: "",
+        imagemPrincipal: "assets/images/igrejas/menino-jesus/hero.jpg",
         imagemAlt: "Igreja Menino Jesus",
         objectPosition: "center center",
-        galeria: [],
+        galeria: [
+            {
+                src: "assets/images/igrejas/menino-jesus/hero.jpg",
+                alt: "Igreja Menino Jesus",
+                objectPosition: "center center",
+            },
+            {
+                src: "assets/images/igrejas/menino-jesus/interior.jpg",
+                alt: "Igreja Menino Jesus",
+                objectPosition: "center center",
+            },
+        ],
         missas: [
             {
                 dia: "Quinta-feira",
@@ -85,10 +106,16 @@ window.igrejasComunidades = [
         id: "ressurreicao",
         nome: "Capela da Ressurreição",
         subtitulo: "",
-        imagemPrincipal: "",
+        imagemPrincipal: "assets/images/igrejas/capela-ressurreicao/hero.jpg",
         imagemAlt: "Capela da Ressurreição",
         objectPosition: "center center",
-        galeria: [],
+        galeria: [
+            {
+                src: "assets/images/igrejas/capela-ressurreicao/hero.jpg",
+                alt: "Capela da Ressurreição",
+                objectPosition: "center center",
+            },
+        ],
         missas: [
             {
                 dia: "Quinta-feira",
@@ -106,10 +133,21 @@ window.igrejasComunidades = [
         id: "milagrosa",
         nome: "Capela da Medalha Milagrosa",
         subtitulo: "",
-        imagemPrincipal: "",
+        imagemPrincipal: "assets/images/igrejas/capela-milagrosa/hero.jpg",
         imagemAlt: "Capela da Medalha Milagrosa",
         objectPosition: "center center",
-        galeria: [],
+        galeria: [
+            {
+                src: "assets/images/igrejas/capela-milagrosa/hero.jpg",
+                alt: "Capela da Medalha Milagrosa",
+                objectPosition: "center center",
+            },
+            {
+                src: "assets/images/igrejas/capela-milagrosa/interior.jpeg",
+                alt: "Capela da Medalha Milagrosa",
+                objectPosition: "center center",
+            },
+        ],
         missas: [
             {
                 dia: "Quarta-feira",

@@ -118,6 +118,14 @@ function createCommunityCard(comunidade) {
         image.alt = comunidade.imagemAlt;
         image.loading = "lazy";
         image.style.objectPosition = comunidade.objectPosition;
+        image.style.setProperty(
+            "--community-image-scale",
+            comunidade.imagemScale || "1",
+        );
+        image.style.setProperty(
+            "--community-image-origin",
+            comunidade.imagemOrigin || comunidade.objectPosition,
+        );
 
         imageWrapper.appendChild(image);
     } else {
@@ -421,6 +429,14 @@ function renderGallery(galeria) {
             image.alt = item.alt;
             image.loading = index === 0 ? "eager" : "lazy";
             image.style.objectPosition = item.objectPosition;
+            image.style.setProperty(
+                "--community-image-scale",
+                item.scale || "1",
+            );
+            image.style.setProperty(
+                "--community-image-origin",
+                item.origin || item.objectPosition,
+            );
 
             slide.appendChild(image);
         } else {
