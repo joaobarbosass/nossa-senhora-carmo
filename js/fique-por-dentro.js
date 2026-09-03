@@ -2,6 +2,7 @@ const agendaSection = document.querySelector("[data-parish-agenda]");
 const agendaTimeline = document.querySelector("[data-agenda-timeline]");
 const agendaWeekStart = document.querySelector("[data-agenda-week-start]");
 const agendaWeekEnd = document.querySelector("[data-agenda-week-end]");
+const agendaRemaining = document.querySelector("[data-agenda-remaining]");
 const agendaOpenButton = document.querySelector("[data-agenda-open]");
 const agendaModal = document.querySelector("[data-agenda-modal]");
 const agendaModalDialog = document.querySelector(".agenda-modal__dialog");
@@ -10,6 +11,7 @@ const agendaModalClose = document.querySelector("[data-agenda-close]");
 const agendaModalContent = document.querySelector("[data-agenda-modal-content]");
 
 const agendaEventos = window.agendaEventos || [];
+const AGENDA_HOME_EVENT_LIMIT = 5;
 const AGENDA_MODAL_CLOSE_TRANSITION_DELAY = 240;
 
 let agendaModalLastFocusedElement = null;
@@ -290,6 +292,23 @@ function renderHomeTimeline(events, referenceDate) {
     });
 }
 
+function renderRemainingWeekEvents(totalEvents) {
+    if (!agendaRemaining) return;
+
+    const remainingEvents = totalEvents - AGENDA_HOME_EVENT_LIMIT;
+
+    if (remainingEvents <= 0) {
+        agendaRemaining.hidden = true;
+        agendaRemaining.textContent = "";
+        return;
+    }
+
+    agendaRemaining.hidden = false;
+    agendaRemaining.textContent = `Ainda há ${remainingEvents} ${
+        remainingEvents === 1 ? "evento" : "eventos"
+    } nesta semana`;
+}
+
 function getWeekLabel(weekRange, currentWeekRange) {
     if (weekRange.start.getTime() === currentWeekRange.start.getTime()) {
         return "Esta semana";
@@ -498,9 +517,11 @@ function renderAgenda() {
     const weekEvents = normalizedEvents.filter((evento) => {
         return isEventInRange(evento, weekRange.start, weekRange.end);
     });
+    const homeEvents = weekEvents.slice(0, AGENDA_HOME_EVENT_LIMIT);
 
     renderWeekRange(weekRange);
-    renderHomeTimeline(weekEvents, referenceDate);
+    renderHomeTimeline(homeEvents, referenceDate);
+    renderRemainingWeekEvents(weekEvents.length);
 }
 
 agendaOpenButton?.addEventListener("click", openAgendaModal);

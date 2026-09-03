@@ -58,6 +58,40 @@ let galleryPointerStartX = 0;
 let galleryPointerStartY = 0;
 let galleryPointerDown = false;
 
+function getCommunityCardById(id) {
+    if (!id) return null;
+
+    if (window.CSS?.escape) {
+        return comunidadesGrid?.querySelector(
+            `.comunidade-card[data-community-id="${CSS.escape(id)}"]`,
+        );
+    }
+
+    return comunidadesGrid?.querySelector(
+        `.comunidade-card[data-community-id="${id}"]`,
+    );
+}
+
+function clearActiveCommunityCard() {
+    comunidadesGrid
+        ?.querySelectorAll(".comunidade-card.is-active")
+        .forEach((card) => {
+            card.classList.remove("is-active");
+            card.setAttribute("aria-expanded", "false");
+        });
+}
+
+function setActiveCommunityCard(id) {
+    clearActiveCommunityCard();
+
+    const activeCard = getCommunityCardById(id);
+
+    if (!activeCard) return;
+
+    activeCard.classList.add("is-active");
+    activeCard.setAttribute("aria-expanded", "true");
+}
+
 /* =============================================
    CARDS
    ============================================= */
@@ -73,6 +107,7 @@ function createCommunityCard(comunidade) {
     card.type = "button";
     card.dataset.communityId = comunidade.id;
     card.setAttribute("aria-label", `Abrir ${comunidade.nome}`);
+    card.setAttribute("aria-expanded", "false");
 
     imageWrapper.className = "comunidade-card__image";
 
@@ -281,6 +316,7 @@ function openModal(comunidade) {
     comunidadeAtual = comunidade;
     modalLastFocusedElement = document.activeElement;
 
+    setActiveCommunityCard(comunidade.id);
     fillModalInfo(comunidade);
     renderGallery(comunidade.galeria);
     lockModalScroll();
@@ -313,6 +349,7 @@ function closeModal() {
         communityGallery.innerHTML = "";
         communityGalleryDots.innerHTML = "";
         comunidadeAtual = null;
+        clearActiveCommunityCard();
         unlockModalScroll();
 
         if (
