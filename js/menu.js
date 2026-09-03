@@ -457,9 +457,16 @@ function isHeaderVisibilitySuspended() {
     );
 }
 
+function updateHeaderSurface(isOverHero) {
+    header?.classList.toggle("header-over-hero", isOverHero);
+}
+
 function updateHeaderVisibility() {
     const currentY = window.scrollY;
     const delta = currentY - lastScrollY;
+    const isOverHero = isHeroStillInView();
+
+    updateHeaderSurface(isOverHero);
 
     if (isHeaderVisibilitySuspended()) {
         lastScrollY = currentY;
@@ -468,7 +475,7 @@ function updateHeaderVisibility() {
         return;
     }
 
-    if (isHeroStillInView()) {
+    if (isOverHero) {
         header?.classList.remove("header-hidden");
         lastScrollY = currentY;
         scrollTicking = false;
@@ -520,6 +527,8 @@ window.addEventListener(
     },
     { passive: true },
 );
+
+updateHeaderVisibility();
 
 window.addEventListener(
     "resize",

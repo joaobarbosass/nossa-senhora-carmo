@@ -84,7 +84,11 @@ body {
     align-items: center;
 
     background:
-        radial-gradient(circle at center, rgba(212, 175, 55, 0.12), transparent 35%),
+        radial-gradient(
+            circle at center,
+            rgba(212, 175, 55, 0.12),
+            transparent 35%
+        ),
         #f1e0dc;
 
     z-index: 99999;

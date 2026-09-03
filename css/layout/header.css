@@ -24,14 +24,28 @@ header {
     top: 0;
     left: 0;
     background:
-        linear-gradient(135deg, rgba(36, 22, 16, 0.3), rgba(98, 66, 53, 0.12)),
-        #543023;
+        linear-gradient(180deg, rgba(36, 22, 16, 0.36), rgba(36, 22, 16, 0.2)),
+        rgba(36, 22, 16, 0.2);
+    border-bottom: 1px solid rgba(241, 224, 220, 0.1);
+    box-shadow: 0 12px 30px rgba(36, 22, 16, 0.1);
+    backdrop-filter: blur(30px) saturate(135%);
+    -webkit-backdrop-filter: blur(30px) saturate(135%);
     z-index: 1250;
     padding: 0 10px;
 
     transform: translateY(0);
     transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: transform;
+}
+
+header.header-over-hero {
+    background:
+        linear-gradient(180deg, rgba(36, 22, 16, 0.16), rgba(36, 22, 16, 0.04)),
+        rgba(36, 22, 16, 0.04);
+    border-bottom-color: rgba(241, 224, 220, 0.06);
+    box-shadow: 0 10px 26px rgba(36, 22, 16, 0.06);
+    backdrop-filter: blur(34px) saturate(140%);
+    -webkit-backdrop-filter: blur(34px) saturate(140%);
 }
 
 header.header-hidden {
