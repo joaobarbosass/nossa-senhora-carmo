@@ -4,7 +4,7 @@ const isInPages = path.includes("/pages/") || path.includes("\\pages\\");
 
 const basePath = isInPages ? "../" : "./";
 
-const MINIMUM_LOADING_TIME = 120;
+const MINIMUM_LOADING_TIME = 3000; // Temporario para teste visual do loading.
 const MAXIMUM_LOADING_TIME = 1200;
 
 async function loadComponent(id, file) {
@@ -203,6 +203,27 @@ function waitForMaximumLoadingTime(startTime) {
     });
 }
 
+function waitForHeroReady() {
+    const hero = document.querySelector("[data-hero-carousel]");
+
+    if (!hero || hero.dataset.heroReady === "true") {
+        return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+        const timeout = setTimeout(resolve, 1800);
+
+        window.addEventListener(
+            "hero-carousel-ready",
+            () => {
+                clearTimeout(timeout);
+                resolve();
+            },
+            { once: true },
+        );
+    });
+}
+
 async function init() {
     await loadLayoutComponents();
 
@@ -215,6 +236,7 @@ async function init() {
     applyMenuCascade();
     await loadMenuScript();
     await waitForLayoutReady();
+    await waitForHeroReady();
 }
 
 async function startApp() {

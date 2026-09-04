@@ -1,19 +1,25 @@
 function createLoadingScreen() {
-    if (!document.body || document.getElementById("loading-screen")) return;
+    if (!document.body) return;
 
-    const loading = document.createElement("div");
+    let loading = document.getElementById("loading-screen");
 
-    loading.id = "loading-screen";
-    loading.setAttribute("aria-live", "polite");
+    if (!loading) {
+        loading = document.createElement("div");
+
+        loading.id = "loading-screen";
+        loading.setAttribute("aria-live", "polite");
+
+        loading.innerHTML = `
+            <div class="loading-content">
+                <span class="loading-spinner" aria-hidden="true"></span>
+            </div>
+        `;
+
+        document.body.prepend(loading);
+    }
+
     loading.setAttribute("aria-busy", "true");
-
-    loading.innerHTML = `
-        <div class="loading-content">
-            <span class="loading-spinner" aria-hidden="true"></span>
-        </div>
-    `;
-
-    document.body.prepend(loading);
+    document.documentElement.classList.add("app-loading");
     document.body.classList.add("loading");
 }
 
@@ -42,6 +48,15 @@ window.hideLoading = function () {
 
         document.body.classList.remove("loading");
         document.body.classList.remove("loading-fade-out");
+        document.documentElement.classList.remove("app-loading");
+
+        const themeColor = document.querySelector(
+            'meta[name="theme-color"][data-ready-color]',
+        );
+
+        if (themeColor) {
+            themeColor.setAttribute("content", themeColor.dataset.readyColor);
+        }
 
         if (loadingScreen.parentNode) {
             loadingScreen.remove();
@@ -65,5 +80,5 @@ window.hideLoading = function () {
 
     setTimeout(() => {
         finalizarLoading();
-    }, 420);
+    }, 760);
 };

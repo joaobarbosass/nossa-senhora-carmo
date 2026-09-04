@@ -35,6 +35,33 @@ if (heroCarousel && churchSlides.length) {
     let isPageVisible = !document.hidden;
     let lastTrackpadSwipeTime = 0;
 
+    function markHeroCarouselReady() {
+        if (heroCarousel.dataset.heroReady === "true") return;
+
+        heroCarousel.dataset.heroReady = "true";
+        window.dispatchEvent(new CustomEvent("hero-carousel-ready"));
+    }
+
+    function waitForHeroImage(image) {
+        if (!image || image.hidden) {
+            markHeroCarouselReady();
+            return;
+        }
+
+        if (image.complete && image.naturalWidth > 0) {
+            if (typeof image.decode === "function") {
+                image.decode().catch(() => {}).finally(markHeroCarouselReady);
+            } else {
+                markHeroCarouselReady();
+            }
+
+            return;
+        }
+
+        image.addEventListener("load", markHeroCarouselReady, { once: true });
+        image.addEventListener("error", markHeroCarouselReady, { once: true });
+    }
+
     const slideElements = churchSlides.map((slide, index) => {
         const image = document.createElement("img");
 
@@ -68,6 +95,8 @@ if (heroCarousel && churchSlides.length) {
 
         return image;
     });
+
+    waitForHeroImage(slideElements[0]);
 
     const dotElements = churchSlides.map((slide, index) => {
         const dot = document.createElement("button");

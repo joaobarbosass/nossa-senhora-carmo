@@ -2,6 +2,7 @@
     --header-height: 80px;
     --stable-viewport-height: 100vh;
     --browser-safe-background: #543023;
+    --loading-background: #f1e0dc;
     --scrim-background: rgba(22, 12, 9, 0.54);
     --scrim-blur: 3px;
     --scrim-transition: opacity 0.24s ease;
@@ -30,6 +31,10 @@ html {
     overflow-x: hidden;
 }
 
+html.app-loading {
+    background-color: var(--loading-background);
+}
+
 body {
     min-height: 100vh;
     background-color: var(--browser-safe-background);
@@ -39,6 +44,10 @@ body {
 
     /* Ajusta o scroll para links âncoras */
     scroll-padding-top: var(--header-height);
+}
+
+html.app-loading body {
+    background-color: var(--loading-background);
 }
 
 * {
@@ -89,7 +98,7 @@ body {
             rgba(212, 175, 55, 0.12),
             transparent 35%
         ),
-        #f1e0dc;
+        var(--loading-background);
 
     z-index: 99999;
 
@@ -97,8 +106,8 @@ body {
     visibility: visible;
 
     transition:
-        opacity 0.36s ease,
-        visibility 0.36s ease;
+        opacity 0.72s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0.72s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 #loading-screen.hidden {
@@ -107,8 +116,13 @@ body {
     pointer-events: none;
 }
 
-body.loading > :not(#loading-screen) {
+body.loading:not(.loading-fade-out) > :not(#loading-screen) {
     visibility: hidden;
+}
+
+#loading-screen.hidden .loading-content {
+    opacity: 0;
+    transform: translate3d(0, -8px, 0) scale(0.96);
 }
 
 .loading-content {
@@ -123,6 +137,9 @@ body.loading > :not(#loading-screen) {
     background: rgba(98, 66, 53, 0.06);
     box-shadow: 0 12px 35px rgba(98, 66, 53, 0.16);
 
+    transition:
+        opacity 0.42s ease,
+        transform 0.58s cubic-bezier(0.22, 1, 0.36, 1);
     animation: loading-content-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -165,4 +182,16 @@ body.loading > :not(#loading-screen) {
 body.loading {
     overflow: hidden;
     cursor: wait;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #loading-screen,
+    .loading-content {
+        transition-duration: 0.12s;
+        animation: none;
+    }
+
+    #loading-screen.hidden .loading-content {
+        transform: none;
+    }
 }
