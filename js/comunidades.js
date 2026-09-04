@@ -326,7 +326,8 @@ function openModal(comunidade) {
 
     setActiveCommunityCard(comunidade.id);
     fillModalInfo(comunidade);
-    renderGallery(comunidade.galeria);
+    communityModal.classList.add("is-loading");
+    const galleryReady = renderGallery(comunidade.galeria);
     lockModalScroll();
 
     communityModal.hidden = false;
@@ -339,6 +340,12 @@ function openModal(comunidade) {
         communityModalOverlay.classList.add("active");
         communityModal.focus();
     });
+
+    galleryReady.finally(() => {
+        if (comunidadeAtual !== comunidade) return;
+
+        communityModal.classList.remove("is-loading");
+    });
 }
 
 function closeModal() {
@@ -347,6 +354,7 @@ function closeModal() {
     stopGalleryAutoplay();
 
     communityModal.classList.remove("active");
+    communityModal.classList.remove("is-loading");
     communityModalOverlay.classList.remove("active");
     communityModal.setAttribute("aria-hidden", "true");
     communityModalOverlay.setAttribute("aria-hidden", "true");
@@ -405,12 +413,40 @@ function getGalleryItems(galeria) {
     ];
 }
 
+function waitForGalleryImage(image) {
+    if (!image) return Promise.resolve();
+
+    return new Promise((resolve) => {
+        const finish = () => {
+            if (image.complete && image.naturalWidth > 0) {
+                if (typeof image.decode === "function") {
+                    image.decode().catch(() => {}).finally(resolve);
+                } else {
+                    resolve();
+                }
+
+                return;
+            }
+
+            resolve();
+        };
+
+        image.addEventListener("load", finish, { once: true });
+        image.addEventListener("error", resolve, { once: true });
+
+        if (image.complete) {
+            finish();
+        }
+    });
+}
+
 function renderGallery(galeria) {
     const galleryItems = getGalleryItems(galeria);
 
     galleryIndex = 0;
     communityGallery.innerHTML = "";
     communityGalleryDots.innerHTML = "";
+    const galleryImagesReady = [];
 
     galleryItems.forEach((item, index) => {
         const slide = document.createElement("div");
@@ -425,9 +461,8 @@ function renderGallery(galeria) {
         if (item.src) {
             const image = document.createElement("img");
 
-            image.src = item.src;
             image.alt = item.alt;
-            image.loading = index === 0 ? "eager" : "lazy";
+            image.loading = "eager";
             image.style.objectPosition = item.objectPosition;
             image.style.setProperty(
                 "--community-image-scale",
@@ -438,6 +473,9 @@ function renderGallery(galeria) {
                 item.origin || item.objectPosition,
             );
 
+            galleryImagesReady.push(waitForGalleryImage(image));
+
+            image.src = item.src;
             slide.appendChild(image);
         } else {
             slide.classList.add("community-gallery__slide--fallback");
@@ -463,6 +501,8 @@ function renderGallery(galeria) {
 
     updateGalleryControls(galleryItems.length);
     startGalleryAutoplay();
+
+    return Promise.all(galleryImagesReady);
 }
 
 function getGallerySlides() {

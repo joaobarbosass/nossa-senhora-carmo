@@ -224,6 +224,72 @@ function waitForHeroReady() {
     });
 }
 
+function waitForImageSource(src) {
+    if (!src) return Promise.resolve();
+
+    return new Promise((resolve) => {
+        const image = new Image();
+
+        image.decoding = "async";
+
+        const finish = () => {
+            if (image.complete && image.naturalWidth > 0) {
+                if (typeof image.decode === "function") {
+                    image.decode().catch(() => {}).finally(resolve);
+                } else {
+                    resolve();
+                }
+
+                return;
+            }
+
+            resolve();
+        };
+
+        image.addEventListener("load", finish, { once: true });
+        image.addEventListener("error", resolve, { once: true });
+        image.src = src;
+
+        if (image.complete) {
+            finish();
+        }
+    });
+}
+
+function getEssentialImageSources() {
+    const sources = new Set();
+
+    (window.igrejasComunidades || []).forEach((comunidade) => {
+        if (comunidade.imagemPrincipal) {
+            sources.add(comunidade.imagemPrincipal);
+        }
+    });
+
+    document
+        .querySelectorAll(
+            ".impossible-mass__saint img, .parish-priest__photo img",
+        )
+        .forEach((image) => {
+            const src = image.currentSrc || image.getAttribute("src");
+
+            if (src) {
+                sources.add(src);
+            }
+        });
+
+    return Array.from(sources);
+}
+
+function waitForEssentialImages() {
+    const sources = getEssentialImageSources();
+
+    if (!sources.length) {
+        return Promise.resolve();
+    }
+
+    return Promise.all(sources.map(waitForImageSource));
+}
+
 async function init() {
     await loadLayoutComponents();
 
@@ -236,7 +302,7 @@ async function init() {
     applyMenuCascade();
     await loadMenuScript();
     await waitForLayoutReady();
-    await waitForHeroReady();
+    await Promise.all([waitForEssentialImages(), waitForHeroReady()]);
 }
 
 async function startApp() {
