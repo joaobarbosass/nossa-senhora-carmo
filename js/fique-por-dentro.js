@@ -16,6 +16,7 @@ const AGENDA_MODAL_CLOSE_TRANSITION_DELAY = 240;
 
 let agendaModalLastFocusedElement = null;
 let agendaModalLockedScrollY = 0;
+let agendaModalTouchLastY = null;
 
 function createLocalDate(dateValue) {
     const [year, month, day] = dateValue.split("-").map(Number);
@@ -431,6 +432,21 @@ function lockAgendaModalScroll() {
     );
     document.documentElement.classList.add("modal-scroll-locked");
     document.body.classList.add("agenda-modal-open");
+    window.addEventListener("wheel", preventAgendaModalPageScroll, {
+        passive: false,
+    });
+    window.addEventListener("touchmove", preventAgendaModalPageScroll, {
+        passive: false,
+    });
+    window.addEventListener("touchstart", storeAgendaModalTouchStart, {
+        passive: true,
+    });
+    window.addEventListener("scroll", keepAgendaPageScrollLocked, {
+        passive: true,
+    });
+    window.addEventListener("pointerdown", closeAgendaModalFromPageChrome, {
+        capture: true,
+    });
 }
 
 function unlockAgendaModalScroll() {
@@ -441,6 +457,14 @@ function unlockAgendaModalScroll() {
     document.body.style.removeProperty("--agenda-modal-locked-scroll-y");
     document.body.style.removeProperty("--agenda-modal-page-scrollbar-width");
     document.body.style.removeProperty("--active-modal-page-scrollbar-width");
+    window.removeEventListener("wheel", preventAgendaModalPageScroll);
+    window.removeEventListener("touchmove", preventAgendaModalPageScroll);
+    window.removeEventListener("touchstart", storeAgendaModalTouchStart);
+    window.removeEventListener("scroll", keepAgendaPageScrollLocked);
+    window.removeEventListener("pointerdown", closeAgendaModalFromPageChrome, {
+        capture: true,
+    });
+    agendaModalTouchLastY = null;
 
     window.scrollTo(0, scrollY);
 
@@ -451,6 +475,91 @@ function unlockAgendaModalScroll() {
             window.__suspendHeaderVisibility = false;
         });
     });
+}
+
+function getScrollableAgendaModalElement(target, modalDialog) {
+    if (!(target instanceof Element) || !modalDialog?.contains(target)) {
+        return null;
+    }
+
+    let currentElement = target;
+
+    while (currentElement && modalDialog.contains(currentElement)) {
+        const { overflowY } = getComputedStyle(currentElement);
+        const canScrollY =
+            /(auto|scroll)/.test(overflowY) &&
+            currentElement.scrollHeight > currentElement.clientHeight;
+
+        if (canScrollY) return currentElement;
+
+        if (currentElement === modalDialog) break;
+
+        currentElement = currentElement.parentElement;
+    }
+
+    return null;
+}
+
+function preventAgendaModalPageScroll(event) {
+    if (!agendaModal?.classList.contains("active")) return;
+
+    const scrollableElement = getScrollableAgendaModalElement(
+        event.target,
+        agendaModal,
+    );
+
+    if (scrollableElement && canContinueAgendaModalScroll(event, scrollableElement)) {
+        return;
+    }
+
+    event.preventDefault();
+}
+
+function storeAgendaModalTouchStart(event) {
+    agendaModalTouchLastY = event.touches?.[0]?.clientY ?? null;
+}
+
+function keepAgendaPageScrollLocked() {
+    if (!document.body.classList.contains("agenda-modal-open")) return;
+    if (window.scrollY === agendaModalLockedScrollY) return;
+
+    window.scrollTo(0, agendaModalLockedScrollY);
+}
+
+function closeAgendaModalFromPageChrome(event) {
+    if (!agendaModal?.classList.contains("active")) return;
+    if (agendaModal?.contains(event.target)) return;
+
+    closeAgendaModal();
+}
+
+function canContinueAgendaModalScroll(event, scrollableElement) {
+    let deltaY = 0;
+
+    if (event.type === "wheel") {
+        deltaY = event.deltaY;
+    } else if (event.type === "touchmove") {
+        const currentY = event.touches?.[0]?.clientY;
+
+        if (typeof currentY !== "number" || agendaModalTouchLastY === null) {
+            agendaModalTouchLastY = currentY ?? null;
+            return true;
+        }
+
+        deltaY = agendaModalTouchLastY - currentY;
+        agendaModalTouchLastY = currentY;
+    }
+
+    if (deltaY < 0) return scrollableElement.scrollTop > 0;
+
+    if (deltaY > 0) {
+        return (
+            scrollableElement.scrollTop + scrollableElement.clientHeight <
+            scrollableElement.scrollHeight - 1
+        );
+    }
+
+    return true;
 }
 
 function openAgendaModal() {

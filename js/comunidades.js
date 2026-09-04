@@ -54,6 +54,7 @@ let galleryTimer = null;
 let galleryResumeTimer = null;
 let modalLastFocusedElement = null;
 let modalLockedScrollY = 0;
+let modalTouchLastY = null;
 let galleryPointerStartX = 0;
 let galleryPointerStartY = 0;
 let galleryPointerDown = false;
@@ -186,6 +187,21 @@ function lockModalScroll() {
     );
     document.documentElement.classList.add("modal-scroll-locked");
     document.body.classList.add("community-modal-open");
+    window.addEventListener("wheel", preventCommunityModalPageScroll, {
+        passive: false,
+    });
+    window.addEventListener("touchmove", preventCommunityModalPageScroll, {
+        passive: false,
+    });
+    window.addEventListener("touchstart", storeCommunityModalTouchStart, {
+        passive: true,
+    });
+    window.addEventListener("scroll", keepCommunityPageScrollLocked, {
+        passive: true,
+    });
+    window.addEventListener("pointerdown", closeCommunityModalFromPageChrome, {
+        capture: true,
+    });
 }
 
 function unlockModalScroll() {
@@ -196,6 +212,16 @@ function unlockModalScroll() {
     document.body.style.removeProperty("--modal-locked-scroll-y");
     document.body.style.removeProperty("--modal-page-scrollbar-width");
     document.body.style.removeProperty("--active-modal-page-scrollbar-width");
+    window.removeEventListener("wheel", preventCommunityModalPageScroll);
+    window.removeEventListener("touchmove", preventCommunityModalPageScroll);
+    window.removeEventListener("touchstart", storeCommunityModalTouchStart);
+    window.removeEventListener("scroll", keepCommunityPageScrollLocked);
+    window.removeEventListener(
+        "pointerdown",
+        closeCommunityModalFromPageChrome,
+        { capture: true },
+    );
+    modalTouchLastY = null;
 
     window.scrollTo(0, scrollY);
 
@@ -206,6 +232,94 @@ function unlockModalScroll() {
             window.__suspendHeaderVisibility = false;
         });
     });
+}
+
+function getScrollableCommunityModalElement(target, modalDialog) {
+    if (!(target instanceof Element) || !modalDialog?.contains(target)) {
+        return null;
+    }
+
+    let currentElement = target;
+
+    while (currentElement && modalDialog.contains(currentElement)) {
+        const { overflowY } = getComputedStyle(currentElement);
+        const canScrollY =
+            /(auto|scroll)/.test(overflowY) &&
+            currentElement.scrollHeight > currentElement.clientHeight;
+
+        if (canScrollY) return currentElement;
+
+        if (currentElement === modalDialog) break;
+
+        currentElement = currentElement.parentElement;
+    }
+
+    return null;
+}
+
+function preventCommunityModalPageScroll(event) {
+    if (!communityModal?.classList.contains("active")) return;
+
+    const scrollableElement = getScrollableCommunityModalElement(
+        event.target,
+        communityModalDialog,
+    );
+
+    if (
+        scrollableElement &&
+        canContinueCommunityModalScroll(event, scrollableElement)
+    ) {
+        return;
+    }
+
+    event.preventDefault();
+}
+
+function storeCommunityModalTouchStart(event) {
+    modalTouchLastY = event.touches?.[0]?.clientY ?? null;
+}
+
+function keepCommunityPageScrollLocked() {
+    if (!document.body.classList.contains("community-modal-open")) return;
+    if (window.scrollY === modalLockedScrollY) return;
+
+    window.scrollTo(0, modalLockedScrollY);
+}
+
+function closeCommunityModalFromPageChrome(event) {
+    if (!communityModal?.classList.contains("active")) return;
+    if (communityModalDialog?.contains(event.target)) return;
+
+    closeModal();
+}
+
+function canContinueCommunityModalScroll(event, scrollableElement) {
+    let deltaY = 0;
+
+    if (event.type === "wheel") {
+        deltaY = event.deltaY;
+    } else if (event.type === "touchmove") {
+        const currentY = event.touches?.[0]?.clientY;
+
+        if (typeof currentY !== "number" || modalTouchLastY === null) {
+            modalTouchLastY = currentY ?? null;
+            return true;
+        }
+
+        deltaY = modalTouchLastY - currentY;
+        modalTouchLastY = currentY;
+    }
+
+    if (deltaY < 0) return scrollableElement.scrollTop > 0;
+
+    if (deltaY > 0) {
+        return (
+            scrollableElement.scrollTop + scrollableElement.clientHeight <
+            scrollableElement.scrollHeight - 1
+        );
+    }
+
+    return true;
 }
 
 /* =============================================

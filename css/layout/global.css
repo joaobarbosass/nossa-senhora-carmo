@@ -35,9 +35,11 @@ html {
 }
 
 html.modal-scroll-locked {
+    background-color: var(--scrollbar-track);
     overflow-x: hidden;
     overflow-y: scroll;
     scrollbar-gutter: stable;
+    scrollbar-color: rgba(241, 224, 220, 0.36) var(--scrim-background);
 }
 
 html.menu-scroll-locked {
@@ -123,20 +125,20 @@ html.menu-scroll-locked::-webkit-scrollbar-thumb {
 }
 
 html.modal-scroll-locked {
-    scrollbar-color: rgba(241, 224, 220, 0.3) rgba(22, 12, 9, 0.7);
+    scrollbar-color: rgba(241, 224, 220, 0.36) var(--scrim-background);
 }
 
 html.modal-scroll-locked::-webkit-scrollbar-track {
-    background: rgba(22, 12, 9, 0.7);
+    background: var(--scrim-background);
 }
 
 html.modal-scroll-locked::-webkit-scrollbar-thumb {
-    background: rgba(241, 224, 220, 0.3);
-    border-color: rgba(22, 12, 9, 0.7);
+    background: rgba(241, 224, 220, 0.36);
+    border-color: var(--scrim-background);
 }
 
 html.modal-scroll-locked::-webkit-scrollbar-thumb:hover {
-    background: rgba(241, 224, 220, 0.42);
+    background: rgba(241, 224, 220, 0.46);
 }
 
 /* ==========================================

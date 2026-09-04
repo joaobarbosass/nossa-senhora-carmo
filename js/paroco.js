@@ -17,6 +17,7 @@ const PRIEST_MODAL_CLOSE_TRANSITION_DELAY = 240;
 let priestCounterAnimated = false;
 let priestModalLastFocusedElement = null;
 let priestModalLockedScrollY = 0;
+let priestModalTouchLastY = null;
 
 function getCivilDateValue(date) {
     return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
@@ -139,6 +140,21 @@ function lockPriestModalScroll() {
     );
     document.documentElement.classList.add("modal-scroll-locked");
     document.body.classList.add("priest-modal-open");
+    window.addEventListener("wheel", preventPriestModalPageScroll, {
+        passive: false,
+    });
+    window.addEventListener("touchmove", preventPriestModalPageScroll, {
+        passive: false,
+    });
+    window.addEventListener("touchstart", storePriestModalTouchStart, {
+        passive: true,
+    });
+    window.addEventListener("scroll", keepPriestPageScrollLocked, {
+        passive: true,
+    });
+    window.addEventListener("pointerdown", closePriestModalFromPageChrome, {
+        capture: true,
+    });
 }
 
 function unlockPriestModalScroll() {
@@ -149,6 +165,14 @@ function unlockPriestModalScroll() {
     document.body.style.removeProperty("--priest-modal-locked-scroll-y");
     document.body.style.removeProperty("--priest-modal-page-scrollbar-width");
     document.body.style.removeProperty("--active-modal-page-scrollbar-width");
+    window.removeEventListener("wheel", preventPriestModalPageScroll);
+    window.removeEventListener("touchmove", preventPriestModalPageScroll);
+    window.removeEventListener("touchstart", storePriestModalTouchStart);
+    window.removeEventListener("scroll", keepPriestPageScrollLocked);
+    window.removeEventListener("pointerdown", closePriestModalFromPageChrome, {
+        capture: true,
+    });
+    priestModalTouchLastY = null;
 
     window.scrollTo(0, scrollY);
 
@@ -159,6 +183,91 @@ function unlockPriestModalScroll() {
             window.__suspendHeaderVisibility = false;
         });
     });
+}
+
+function getScrollablePriestModalElement(target, modalDialog) {
+    if (!(target instanceof Element) || !modalDialog?.contains(target)) {
+        return null;
+    }
+
+    let currentElement = target;
+
+    while (currentElement && modalDialog.contains(currentElement)) {
+        const { overflowY } = getComputedStyle(currentElement);
+        const canScrollY =
+            /(auto|scroll)/.test(overflowY) &&
+            currentElement.scrollHeight > currentElement.clientHeight;
+
+        if (canScrollY) return currentElement;
+
+        if (currentElement === modalDialog) break;
+
+        currentElement = currentElement.parentElement;
+    }
+
+    return null;
+}
+
+function preventPriestModalPageScroll(event) {
+    if (!priestModal?.classList.contains("active")) return;
+
+    const scrollableElement = getScrollablePriestModalElement(
+        event.target,
+        priestModal,
+    );
+
+    if (scrollableElement && canContinuePriestModalScroll(event, scrollableElement)) {
+        return;
+    }
+
+    event.preventDefault();
+}
+
+function storePriestModalTouchStart(event) {
+    priestModalTouchLastY = event.touches?.[0]?.clientY ?? null;
+}
+
+function keepPriestPageScrollLocked() {
+    if (!document.body.classList.contains("priest-modal-open")) return;
+    if (window.scrollY === priestModalLockedScrollY) return;
+
+    window.scrollTo(0, priestModalLockedScrollY);
+}
+
+function closePriestModalFromPageChrome(event) {
+    if (!priestModal?.classList.contains("active")) return;
+    if (priestModalDialog?.contains(event.target)) return;
+
+    closePriestModal();
+}
+
+function canContinuePriestModalScroll(event, scrollableElement) {
+    let deltaY = 0;
+
+    if (event.type === "wheel") {
+        deltaY = event.deltaY;
+    } else if (event.type === "touchmove") {
+        const currentY = event.touches?.[0]?.clientY;
+
+        if (typeof currentY !== "number" || priestModalTouchLastY === null) {
+            priestModalTouchLastY = currentY ?? null;
+            return true;
+        }
+
+        deltaY = priestModalTouchLastY - currentY;
+        priestModalTouchLastY = currentY;
+    }
+
+    if (deltaY < 0) return scrollableElement.scrollTop > 0;
+
+    if (deltaY > 0) {
+        return (
+            scrollableElement.scrollTop + scrollableElement.clientHeight <
+            scrollableElement.scrollHeight - 1
+        );
+    }
+
+    return true;
 }
 
 function openPriestModal() {

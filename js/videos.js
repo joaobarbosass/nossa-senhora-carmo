@@ -15,6 +15,7 @@ const VIDEO_MODAL_CLOSE_TRANSITION_DELAY = 240;
 
 let videoModalLastFocusedElement = null;
 let videoModalLockedScrollY = 0;
+let videoModalTouchLastY = null;
 
 function getYoutubeThumbnail(youtubeId) {
     return `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`;
@@ -162,6 +163,21 @@ function lockVideoModalScroll() {
     );
     document.documentElement.classList.add("modal-scroll-locked");
     document.body.classList.add("video-modal-open");
+    window.addEventListener("wheel", preventVideoModalPageScroll, {
+        passive: false,
+    });
+    window.addEventListener("touchmove", preventVideoModalPageScroll, {
+        passive: false,
+    });
+    window.addEventListener("touchstart", storeVideoModalTouchStart, {
+        passive: true,
+    });
+    window.addEventListener("scroll", keepVideoPageScrollLocked, {
+        passive: true,
+    });
+    window.addEventListener("pointerdown", closeVideoModalFromPageChrome, {
+        capture: true,
+    });
 }
 
 function unlockVideoModalScroll() {
@@ -172,6 +188,14 @@ function unlockVideoModalScroll() {
     document.body.style.removeProperty("--video-modal-locked-scroll-y");
     document.body.style.removeProperty("--video-modal-page-scrollbar-width");
     document.body.style.removeProperty("--active-modal-page-scrollbar-width");
+    window.removeEventListener("wheel", preventVideoModalPageScroll);
+    window.removeEventListener("touchmove", preventVideoModalPageScroll);
+    window.removeEventListener("touchstart", storeVideoModalTouchStart);
+    window.removeEventListener("scroll", keepVideoPageScrollLocked);
+    window.removeEventListener("pointerdown", closeVideoModalFromPageChrome, {
+        capture: true,
+    });
+    videoModalTouchLastY = null;
 
     window.scrollTo(0, scrollY);
 
@@ -182,6 +206,91 @@ function unlockVideoModalScroll() {
             window.__suspendHeaderVisibility = false;
         });
     });
+}
+
+function getScrollableVideoModalElement(target, modalDialog) {
+    if (!(target instanceof Element) || !modalDialog?.contains(target)) {
+        return null;
+    }
+
+    let currentElement = target;
+
+    while (currentElement && modalDialog.contains(currentElement)) {
+        const { overflowY } = getComputedStyle(currentElement);
+        const canScrollY =
+            /(auto|scroll)/.test(overflowY) &&
+            currentElement.scrollHeight > currentElement.clientHeight;
+
+        if (canScrollY) return currentElement;
+
+        if (currentElement === modalDialog) break;
+
+        currentElement = currentElement.parentElement;
+    }
+
+    return null;
+}
+
+function preventVideoModalPageScroll(event) {
+    if (!videoModal?.classList.contains("active")) return;
+
+    const scrollableElement = getScrollableVideoModalElement(
+        event.target,
+        videoModal,
+    );
+
+    if (scrollableElement && canContinueVideoModalScroll(event, scrollableElement)) {
+        return;
+    }
+
+    event.preventDefault();
+}
+
+function storeVideoModalTouchStart(event) {
+    videoModalTouchLastY = event.touches?.[0]?.clientY ?? null;
+}
+
+function keepVideoPageScrollLocked() {
+    if (!document.body.classList.contains("video-modal-open")) return;
+    if (window.scrollY === videoModalLockedScrollY) return;
+
+    window.scrollTo(0, videoModalLockedScrollY);
+}
+
+function closeVideoModalFromPageChrome(event) {
+    if (!videoModal?.classList.contains("active")) return;
+    if (videoModalDialog?.contains(event.target)) return;
+
+    closeVideoModal();
+}
+
+function canContinueVideoModalScroll(event, scrollableElement) {
+    let deltaY = 0;
+
+    if (event.type === "wheel") {
+        deltaY = event.deltaY;
+    } else if (event.type === "touchmove") {
+        const currentY = event.touches?.[0]?.clientY;
+
+        if (typeof currentY !== "number" || videoModalTouchLastY === null) {
+            videoModalTouchLastY = currentY ?? null;
+            return true;
+        }
+
+        deltaY = videoModalTouchLastY - currentY;
+        videoModalTouchLastY = currentY;
+    }
+
+    if (deltaY < 0) return scrollableElement.scrollTop > 0;
+
+    if (deltaY > 0) {
+        return (
+            scrollableElement.scrollTop + scrollableElement.clientHeight <
+            scrollableElement.scrollHeight - 1
+        );
+    }
+
+    return true;
 }
 
 function openVideoModal(video) {

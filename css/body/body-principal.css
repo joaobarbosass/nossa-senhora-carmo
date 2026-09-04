@@ -1099,6 +1099,7 @@ body.agenda-modal-open {
     gap: 28px;
     padding: 28px 34px 34px;
     overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 .agenda-modal__content::-webkit-scrollbar {
@@ -1408,6 +1409,7 @@ body.video-modal-open {
     max-height: min(760px, calc(100dvh - 48px));
     padding: 28px;
     overflow-y: auto;
+    overscroll-behavior: contain;
     border: 1px solid rgba(212, 175, 55, 0.28);
     border-radius: 8px;
     background: #f1e0dc;
@@ -1728,6 +1730,7 @@ body.priest-modal-open {
     width: min(1040px, 100%);
     max-height: min(780px, calc(100dvh - 48px));
     overflow-y: auto;
+    overscroll-behavior: contain;
     border: 1px solid rgba(212, 175, 55, 0.28);
     border-radius: 8px;
     background: #f1e0dc;
@@ -1957,6 +1960,7 @@ body.community-modal-open .page-content {
     align-items: center;
     padding: 24px;
     overflow-x: hidden;
+    overscroll-behavior: contain;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.22s ease;
@@ -2198,6 +2202,7 @@ body.community-modal-open .page-content {
     padding: 56px 34px 34px;
     overflow-y: auto;
     overflow-x: hidden;
+    overscroll-behavior: contain;
     background: #f1e0dc;
     color: #543023;
 }
