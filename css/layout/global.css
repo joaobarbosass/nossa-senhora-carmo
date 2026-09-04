@@ -36,6 +36,10 @@ html.app-loading {
     background-color: var(--loading-background);
 }
 
+html.scrollbar-loading-hidden {
+    scrollbar-color: transparent transparent;
+}
+
 body {
     min-height: 100vh;
     background-color: var(--browser-safe-background);
@@ -49,6 +53,12 @@ body {
 
 html.app-loading body {
     background-color: var(--loading-background);
+}
+
+html.scrollbar-loading-hidden::-webkit-scrollbar-track,
+html.scrollbar-loading-hidden::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-color: transparent;
 }
 
 * {

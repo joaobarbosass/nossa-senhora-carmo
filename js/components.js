@@ -4,7 +4,7 @@ const isInPages = path.includes("/pages/") || path.includes("\\pages\\");
 
 const basePath = isInPages ? "../" : "./";
 
-const MINIMUM_LOADING_TIME = 3000; // Temporario para teste visual do loading.
+const MINIMUM_LOADING_TIME = 650;
 const MAXIMUM_LOADING_TIME = 1200;
 
 async function loadComponent(id, file) {

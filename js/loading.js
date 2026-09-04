@@ -20,6 +20,7 @@ function createLoadingScreen() {
 
     loading.setAttribute("aria-busy", "true");
     document.documentElement.classList.add("app-loading");
+    document.documentElement.classList.add("scrollbar-loading-hidden");
     document.body.classList.add("loading");
 }
 
@@ -49,6 +50,7 @@ window.hideLoading = function () {
         document.body.classList.remove("loading");
         document.body.classList.remove("loading-fade-out");
         document.documentElement.classList.remove("app-loading");
+        document.documentElement.classList.remove("scrollbar-loading-hidden");
 
         const themeColor = document.querySelector(
             'meta[name="theme-color"][data-ready-color]',
@@ -63,20 +65,24 @@ window.hideLoading = function () {
         }
     };
 
-    document.body.classList.add("loading-fade-out");
+    document.documentElement.classList.remove("scrollbar-loading-hidden");
 
-    loadingScreen.classList.add("hidden");
-    loadingScreen.setAttribute("aria-busy", "false");
+    requestAnimationFrame(() => {
+        document.body.classList.add("loading-fade-out");
 
-    loadingScreen.addEventListener(
-        "transitionend",
-        (event) => {
-            if (event.propertyName === "opacity") {
-                finalizarLoading();
-            }
-        },
-        { once: true },
-    );
+        loadingScreen.addEventListener(
+            "transitionend",
+            (event) => {
+                if (event.propertyName === "opacity") {
+                    finalizarLoading();
+                }
+            },
+            { once: true },
+        );
+
+        loadingScreen.classList.add("hidden");
+        loadingScreen.setAttribute("aria-busy", "false");
+    });
 
     setTimeout(() => {
         finalizarLoading();
