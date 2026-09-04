@@ -6,6 +6,7 @@
     --scrim-background: rgba(22, 12, 9, 0.54);
     --scrim-blur: 3px;
     --scrim-transition: opacity 0.24s ease;
+    --scrollbar-track: rgba(241, 224, 220, 0.92);
 }
 
 @supports (height: 100svh) {
@@ -56,7 +57,7 @@ html.app-loading body {
     -webkit-tap-highlight-color: transparent;
 
     scrollbar-width: thin;
-    scrollbar-color: #624235 #c3aa95;
+    scrollbar-color: #624235 var(--scrollbar-track);
 }
 
 /* Cor Scrollbar*/
@@ -67,7 +68,7 @@ html.app-loading body {
 }
 
 ::-webkit-scrollbar-track {
-    background: #c3aa95;
+    background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {

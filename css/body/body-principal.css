@@ -2034,9 +2034,13 @@ body.community-modal-open .page-content {
 
 .community-modal__gallery {
     position: relative;
+    align-self: center;
+    width: calc(100% - 18px);
+    margin-left: 18px;
     min-height: 0;
     aspect-ratio: 4 / 3;
     overflow: hidden;
+    border-radius: 8px;
     background: #543023;
 }
 
@@ -2519,7 +2523,11 @@ body.community-modal-open .page-content {
     }
 
     .community-modal__gallery {
-        aspect-ratio: 4 / 3;
+        align-self: stretch;
+        width: calc(100% - 24px);
+        margin: 12px 12px 0;
+        height: clamp(260px, 44dvh, 430px);
+        aspect-ratio: auto;
     }
 
     .community-modal__info {
@@ -2663,6 +2671,12 @@ body.community-modal-open .page-content {
     .priest-modal__cards,
     .priest-modal__pastoral {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 551px) and (max-width: 820px) {
+    .community-modal__dialog {
+        width: min(660px, calc(100vw - 40px));
     }
 }
 
