@@ -156,6 +156,11 @@ function lockVideoModalScroll() {
         "--video-modal-page-scrollbar-width",
         `${Math.max(scrollbarWidth, 0)}px`,
     );
+    document.body.style.setProperty(
+        "--active-modal-page-scrollbar-width",
+        `${Math.max(scrollbarWidth, 0)}px`,
+    );
+    document.documentElement.classList.add("modal-scroll-locked");
     document.body.classList.add("video-modal-open");
 }
 
@@ -163,8 +168,10 @@ function unlockVideoModalScroll() {
     const scrollY = videoModalLockedScrollY;
 
     document.body.classList.remove("video-modal-open");
+    document.documentElement.classList.remove("modal-scroll-locked");
     document.body.style.removeProperty("--video-modal-locked-scroll-y");
     document.body.style.removeProperty("--video-modal-page-scrollbar-width");
+    document.body.style.removeProperty("--active-modal-page-scrollbar-width");
 
     window.scrollTo(0, scrollY);
 
@@ -206,6 +213,7 @@ function closeVideoModal() {
     videoModalOverlay?.classList.remove("active");
     videoModal.setAttribute("aria-hidden", "true");
     videoModalOverlay?.setAttribute("aria-hidden", "true");
+    unlockVideoModalScroll();
 
     setTimeout(() => {
         videoModal.hidden = true;
@@ -213,8 +221,6 @@ function closeVideoModal() {
         if (videoModalOverlay) {
             videoModalOverlay.hidden = true;
         }
-
-        unlockVideoModalScroll();
 
         if (
             videoModalLastFocusedElement &&

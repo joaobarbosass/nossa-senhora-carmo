@@ -51,6 +51,7 @@ function lockBackgroundScroll() {
         "--page-scrollbar-width",
         `${Math.max(scrollbarWidth, 0)}px`,
     );
+    document.documentElement.classList.add("menu-scroll-locked");
     document.body.classList.add("menu-open");
 
     window.addEventListener("wheel", preventBackgroundScroll, {
@@ -63,6 +64,7 @@ function lockBackgroundScroll() {
 
 function unlockBackgroundScroll() {
     document.body.classList.remove("menu-open");
+    document.documentElement.classList.remove("menu-scroll-locked");
     document.body.style.removeProperty("--locked-scroll-y");
     document.body.style.removeProperty("--page-scrollbar-width");
 

@@ -30,6 +30,20 @@
 html {
     background-color: var(--browser-safe-background);
     overflow-x: hidden;
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+}
+
+html.modal-scroll-locked {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+}
+
+html.menu-scroll-locked {
+    overflow: hidden;
+    scrollbar-gutter: auto;
+    scrollbar-color: transparent transparent;
 }
 
 html.app-loading {
@@ -57,6 +71,12 @@ html.app-loading body {
 
 html.scrollbar-loading-hidden::-webkit-scrollbar-track,
 html.scrollbar-loading-hidden::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-color: transparent;
+}
+
+html.menu-scroll-locked::-webkit-scrollbar-track,
+html.menu-scroll-locked::-webkit-scrollbar-thumb {
     background: transparent;
     border-color: transparent;
 }
@@ -89,6 +109,34 @@ html.scrollbar-loading-hidden::-webkit-scrollbar-thumb {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #7a5647;
+}
+
+html.menu-scroll-locked::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+html.menu-scroll-locked::-webkit-scrollbar-track,
+html.menu-scroll-locked::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-color: transparent;
+}
+
+html.modal-scroll-locked {
+    scrollbar-color: rgba(241, 224, 220, 0.3) rgba(22, 12, 9, 0.7);
+}
+
+html.modal-scroll-locked::-webkit-scrollbar-track {
+    background: rgba(22, 12, 9, 0.7);
+}
+
+html.modal-scroll-locked::-webkit-scrollbar-thumb {
+    background: rgba(241, 224, 220, 0.3);
+    border-color: rgba(22, 12, 9, 0.7);
+}
+
+html.modal-scroll-locked::-webkit-scrollbar-thumb:hover {
+    background: rgba(241, 224, 220, 0.42);
 }
 
 /* ==========================================

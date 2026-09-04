@@ -133,6 +133,11 @@ function lockPriestModalScroll() {
         "--priest-modal-page-scrollbar-width",
         `${Math.max(scrollbarWidth, 0)}px`,
     );
+    document.body.style.setProperty(
+        "--active-modal-page-scrollbar-width",
+        `${Math.max(scrollbarWidth, 0)}px`,
+    );
+    document.documentElement.classList.add("modal-scroll-locked");
     document.body.classList.add("priest-modal-open");
 }
 
@@ -140,8 +145,10 @@ function unlockPriestModalScroll() {
     const scrollY = priestModalLockedScrollY;
 
     document.body.classList.remove("priest-modal-open");
+    document.documentElement.classList.remove("modal-scroll-locked");
     document.body.style.removeProperty("--priest-modal-locked-scroll-y");
     document.body.style.removeProperty("--priest-modal-page-scrollbar-width");
+    document.body.style.removeProperty("--active-modal-page-scrollbar-width");
 
     window.scrollTo(0, scrollY);
 
@@ -179,6 +186,7 @@ function closePriestModal() {
     priestModalOverlay?.classList.remove("active");
     priestModal.setAttribute("aria-hidden", "true");
     priestModalOverlay?.setAttribute("aria-hidden", "true");
+    unlockPriestModalScroll();
 
     setTimeout(() => {
         priestModal.hidden = true;
@@ -186,8 +194,6 @@ function closePriestModal() {
         if (priestModalOverlay) {
             priestModalOverlay.hidden = true;
         }
-
-        unlockPriestModalScroll();
 
         if (
             priestModalLastFocusedElement &&

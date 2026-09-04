@@ -425,6 +425,11 @@ function lockAgendaModalScroll() {
         "--agenda-modal-page-scrollbar-width",
         `${Math.max(scrollbarWidth, 0)}px`,
     );
+    document.body.style.setProperty(
+        "--active-modal-page-scrollbar-width",
+        `${Math.max(scrollbarWidth, 0)}px`,
+    );
+    document.documentElement.classList.add("modal-scroll-locked");
     document.body.classList.add("agenda-modal-open");
 }
 
@@ -432,8 +437,10 @@ function unlockAgendaModalScroll() {
     const scrollY = agendaModalLockedScrollY;
 
     document.body.classList.remove("agenda-modal-open");
+    document.documentElement.classList.remove("modal-scroll-locked");
     document.body.style.removeProperty("--agenda-modal-locked-scroll-y");
     document.body.style.removeProperty("--agenda-modal-page-scrollbar-width");
+    document.body.style.removeProperty("--active-modal-page-scrollbar-width");
 
     window.scrollTo(0, scrollY);
 
@@ -472,6 +479,7 @@ function closeAgendaModal() {
     agendaModalOverlay?.classList.remove("active");
     agendaModal.setAttribute("aria-hidden", "true");
     agendaModalOverlay?.setAttribute("aria-hidden", "true");
+    unlockAgendaModalScroll();
 
     setTimeout(() => {
         agendaModal.hidden = true;
@@ -479,8 +487,6 @@ function closeAgendaModal() {
         if (agendaModalOverlay) {
             agendaModalOverlay.hidden = true;
         }
-
-        unlockAgendaModalScroll();
 
         if (
             agendaModalLastFocusedElement &&

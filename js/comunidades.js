@@ -180,6 +180,11 @@ function lockModalScroll() {
         "--modal-page-scrollbar-width",
         `${Math.max(scrollbarWidth, 0)}px`,
     );
+    document.body.style.setProperty(
+        "--active-modal-page-scrollbar-width",
+        `${Math.max(scrollbarWidth, 0)}px`,
+    );
+    document.documentElement.classList.add("modal-scroll-locked");
     document.body.classList.add("community-modal-open");
 }
 
@@ -187,8 +192,10 @@ function unlockModalScroll() {
     const scrollY = modalLockedScrollY;
 
     document.body.classList.remove("community-modal-open");
+    document.documentElement.classList.remove("modal-scroll-locked");
     document.body.style.removeProperty("--modal-locked-scroll-y");
     document.body.style.removeProperty("--modal-page-scrollbar-width");
+    document.body.style.removeProperty("--active-modal-page-scrollbar-width");
 
     window.scrollTo(0, scrollY);
 
@@ -358,6 +365,7 @@ function closeModal() {
     communityModalOverlay.classList.remove("active");
     communityModal.setAttribute("aria-hidden", "true");
     communityModalOverlay.setAttribute("aria-hidden", "true");
+    unlockModalScroll();
 
     setTimeout(() => {
         communityModal.hidden = true;
@@ -366,7 +374,6 @@ function closeModal() {
         communityGalleryDots.innerHTML = "";
         comunidadeAtual = null;
         clearActiveCommunityCard();
-        unlockModalScroll();
 
         if (
             modalLastFocusedElement &&
