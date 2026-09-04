@@ -176,30 +176,11 @@ function finishInternalNavigation(link, href) {
     link.classList.remove(MENU_LINK_LOADING);
     link.classList.add(MENU_LINK_COMPLETED);
 
-    closeMenu({ keepHeaderVisible: false });
-
     if (!target) return;
 
-    menuScrollActive = true;
-    clearTimeout(menuScrollTimeout);
-
-    requestAnimationFrame(() => {
-        if (href === "#inicio") {
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth",
-            });
-        } else {
-            target.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-            });
-        }
-
-        menuScrollTimeout = setTimeout(() => {
-            menuScrollActive = false;
-        }, 1200);
-    });
+    startControlledSectionNavigation();
+    closeMenu({ keepHeaderVisible: false });
+    navigateToPageSection(href, target);
 }
 
 function closeMenu({ keepHeaderVisible = true } = {}) {
@@ -238,7 +219,7 @@ function closeMenu({ keepHeaderVisible = true } = {}) {
     });
 
     if (lastFocusedElement && document.contains(lastFocusedElement)) {
-        lastFocusedElement.focus();
+        lastFocusedElement.focus({ preventScroll: true });
     }
 }
 
@@ -357,6 +338,20 @@ links.forEach((link) => {
     });
 });
 
+document.addEventListener("click", (event) => {
+    const footerLink = event.target.closest("[data-footer-anchor]");
+    const href = footerLink?.getAttribute("href");
+
+    if (!footerLink || !isInternalHref(href)) return;
+
+    const target = document.querySelector(href);
+
+    if (!target) return;
+
+    event.preventDefault();
+    navigateToPageSection(href, target);
+});
+
 /* =============================================
    SWIPE PARA FECHAR / TOQUE: SCROLL vs CLIQUE
    ============================================= */
@@ -432,11 +427,14 @@ nav?.addEventListener(
 
 let lastScrollY = window.scrollY;
 let menuScrollActive = false;
-let menuScrollTimeout = null;
+let sectionNavigationFrame = null;
 let scrollTicking = false;
 const heroSection = document.querySelector("[data-hero-carousel]");
 
 const SCROLL_TOLERANCE = 5;
+const SECTION_NAVIGATION_SETTLE_TOLERANCE = 2;
+const SECTION_NAVIGATION_STABLE_FRAMES = 8;
+const SECTION_NAVIGATION_MAX_FRAMES = 140;
 
 function getHeaderHeight() {
     const headerHeight = getComputedStyle(document.documentElement)
@@ -461,6 +459,93 @@ function isHeaderVisibilitySuspended() {
 
 function updateHeaderSurface(isOverHero) {
     header?.classList.toggle("header-over-hero", isOverHero);
+}
+
+function getSectionScrollTarget(target, href) {
+    if (href === "#inicio") return 0;
+
+    const scrollMarginTop =
+        Number.parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+    const targetTop =
+        target.getBoundingClientRect().top + window.scrollY - scrollMarginTop;
+    const maxScroll =
+        document.documentElement.scrollHeight - window.innerHeight;
+
+    return Math.max(0, Math.min(targetTop, maxScroll));
+}
+
+function finishSectionNavigation() {
+    window.__suspendHeaderVisibility = false;
+    menuScrollActive = false;
+    sectionNavigationFrame = null;
+    lastScrollY = window.scrollY;
+    updateHeaderSurface(isHeroStillInView());
+
+    if (!isHeroStillInView()) {
+        header?.classList.add("header-hidden");
+    }
+}
+
+function startControlledSectionNavigation() {
+    menuScrollActive = true;
+    window.__suspendHeaderVisibility = true;
+    header?.classList.add("header-hidden");
+}
+
+function waitForSectionScrollToSettle(targetY) {
+    let stableFrames = 0;
+    let frameCount = 0;
+
+    const checkScroll = () => {
+        const distance = Math.abs(window.scrollY - targetY);
+
+        frameCount += 1;
+
+        if (distance <= SECTION_NAVIGATION_SETTLE_TOLERANCE) {
+            stableFrames += 1;
+        } else {
+            stableFrames = 0;
+        }
+
+        if (
+            stableFrames >= SECTION_NAVIGATION_STABLE_FRAMES ||
+            frameCount >= SECTION_NAVIGATION_MAX_FRAMES
+        ) {
+            finishSectionNavigation();
+            return;
+        }
+
+        sectionNavigationFrame = requestAnimationFrame(checkScroll);
+    };
+
+    sectionNavigationFrame = requestAnimationFrame(checkScroll);
+}
+
+function navigateToPageSection(href, target) {
+    const shouldReduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const targetY = getSectionScrollTarget(target, href);
+
+    startControlledSectionNavigation();
+
+    if (sectionNavigationFrame) {
+        cancelAnimationFrame(sectionNavigationFrame);
+    }
+
+    requestAnimationFrame(() => {
+        window.scrollTo({
+            top: targetY,
+            behavior: shouldReduceMotion ? "auto" : "smooth",
+        });
+
+        if (shouldReduceMotion) {
+            finishSectionNavigation();
+            return;
+        }
+
+        waitForSectionScrollToSettle(targetY);
+    });
 }
 
 function updateHeaderVisibility() {
