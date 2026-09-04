@@ -99,6 +99,44 @@ function applyPageLinks() {
     });
 }
 
+function applyFooterAnchorLinks() {
+    /* =========================
+       LINKS DO FOOTER
+    ========================= */
+
+    document.querySelectorAll("[data-footer-anchor]").forEach((link) => {
+        const anchor = link.dataset.footerAnchor;
+
+        link.href = isInPages ? `${basePath}index.html#${anchor}` : `#${anchor}`;
+    });
+}
+
+function applyFooterLocationLink() {
+    /* =========================
+       LOCALIZACAO DO FOOTER
+    ========================= */
+
+    const locationLink = document.querySelector("[data-footer-location]");
+    const matriz = window.igrejasComunidades?.find(
+        (comunidade) => comunidade.id === "matriz",
+    );
+
+    if (!locationLink || !matriz?.googleMaps) return;
+
+    locationLink.href = matriz.googleMaps;
+    locationLink.hidden = false;
+}
+
+function applyCurrentYear() {
+    /* =========================
+       ANO ATUAL
+    ========================= */
+
+    document.querySelectorAll("[data-current-year]").forEach((element) => {
+        element.textContent = new Date().getFullYear();
+    });
+}
+
 function filterMenuLinks() {
     /* =========================
        FILTRO DE LINKS POR PÁGINA
@@ -298,6 +336,9 @@ async function init() {
     applyIconPaths();
     applyHomeLinks();
     applyPageLinks();
+    applyFooterAnchorLinks();
+    applyFooterLocationLink();
+    applyCurrentYear();
     filterMenuLinks();
     applyMenuCascade();
     await loadMenuScript();
