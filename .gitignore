@@ -1,0 +1,9 @@
+# Google Calendar - configuração privada
+config/google-calendar.php
+
+# Variáveis de ambiente
+.env
+.env.*
+
+# Cache da agenda
+cache/
