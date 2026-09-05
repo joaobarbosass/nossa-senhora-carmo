@@ -11,8 +11,19 @@ const agendaModalClose = document.querySelector("[data-agenda-close]");
 const agendaModalContent = document.querySelector("[data-agenda-modal-content]");
 
 let agendaEventos = [];
+let agendaEventosPendentes = null;
+let agendaEventSignatures = new Map();
+let agendaSilentUpdateInProgress = false;
+let agendaUpdateNotification = null;
+let agendaUpdateNotificationTimer = null;
+let agendaUpdateNotificationCloseTimer = null;
 const AGENDA_HOME_EVENT_LIMIT = 5;
 const AGENDA_MODAL_CLOSE_TRANSITION_DELAY = 240;
+const AGENDA_SILENT_POLL_INTERVAL = 5 * 60 * 1000;
+const AGENDA_SILENT_POLLING_ENABLED = false;
+const AGENDA_UPDATE_NOTIFICATION_DELAY = 9000;
+const AGENDA_UPDATE_NOTIFICATION_EXIT_DELAY = 360;
+const AGENDA_HIGHLIGHT_CLEAR_DELAY = 650;
 
 let agendaModalLastFocusedElement = null;
 let agendaModalLockedScrollY = 0;
@@ -200,6 +211,59 @@ function sortEvents(events) {
     });
 }
 
+function getAgendaComparableFields(evento) {
+    return {
+        id: evento.id || "",
+        titulo: evento.titulo || "",
+        dataInicio: evento.dataInicio || "",
+        horaInicio: evento.horaInicio || "",
+        dataFim: evento.dataFim || "",
+        horaFim: evento.horaFim || "",
+        local: evento.local || "",
+        descricao: evento.descricao || "",
+    };
+}
+
+function getAgendaEventSignature(evento) {
+    return JSON.stringify(getAgendaComparableFields(evento));
+}
+
+function createAgendaSignatureMap(events) {
+    const signatures = new Map();
+
+    events.forEach((evento) => {
+        if (!evento.id) return;
+
+        signatures.set(evento.id, getAgendaEventSignature(evento));
+    });
+
+    return signatures;
+}
+
+function getChangedAgendaEventIds(currentSignatures, nextSignatures) {
+    const changedIds = new Set();
+
+    nextSignatures.forEach((signature, id) => {
+        if (currentSignatures.get(id) !== signature) {
+            changedIds.add(id);
+        }
+    });
+
+    return changedIds;
+}
+
+function hasAgendaChanged(currentSignatures, nextSignatures) {
+    if (currentSignatures.size !== nextSignatures.size) return true;
+
+    for (const [id, signature] of nextSignatures) {
+        if (currentSignatures.get(id) !== signature) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 function createEventCard(evento, status, isCompact = false) {
     const card = document.createElement("article");
     const date = document.createElement("time");
@@ -280,7 +344,201 @@ function renderEmptyTimeline() {
     agendaTimeline.appendChild(empty);
 }
 
-function renderHomeTimeline(events, referenceDate) {
+function renderAgendaState(message, modifier) {
+    if (!agendaTimeline) return;
+
+    const state = document.createElement("div");
+
+    state.className = "parish-agenda__state";
+
+    if (modifier) {
+        state.classList.add(`parish-agenda__state--${modifier}`);
+    }
+
+    state.textContent = message;
+    agendaTimeline.innerHTML = "";
+    agendaTimeline.appendChild(state);
+}
+
+function renderAgendaLoading() {
+    renderAgendaState("Carregando agenda...", "loading");
+}
+
+function renderAgendaError() {
+    renderAgendaState(
+        "Não foi possível carregar os eventos no momento.",
+        "error",
+    );
+}
+
+function isAgendaSectionVisible() {
+    if (!agendaSection) return false;
+
+    const rect = agendaSection.getBoundingClientRect();
+    const viewportHeight =
+        window.innerHeight || document.documentElement.clientHeight;
+    const visibleTop = Math.max(rect.top, 0);
+    const visibleBottom = Math.min(rect.bottom, viewportHeight);
+    const visibleHeight = Math.max(visibleBottom - visibleTop, 0);
+    const minimumVisibleHeight = Math.min(rect.height * 0.25, 220);
+
+    return visibleHeight >= Math.max(minimumVisibleHeight, 120);
+}
+
+function isAgendaModalOpen() {
+    return Boolean(agendaModal?.classList.contains("active"));
+}
+
+function getAgendaUpdateNotification() {
+    if (agendaUpdateNotification) return agendaUpdateNotification;
+
+    const notification = document.createElement("div");
+    const surface = document.createElement("div");
+    const dot = document.createElement("span");
+    const content = document.createElement("div");
+    const title = document.createElement("strong");
+    const message = document.createElement("span");
+    const action = document.createElement("button");
+    const close = document.createElement("button");
+    const closeIcon = document.createElement("span");
+
+    notification.className = "agenda-update-notification";
+    notification.setAttribute("aria-live", "polite");
+    notification.setAttribute("aria-atomic", "true");
+    notification.hidden = true;
+
+    surface.className = "agenda-update-notification__surface";
+    dot.className = "agenda-update-notification__dot";
+    dot.setAttribute("aria-hidden", "true");
+
+    content.className = "agenda-update-notification__content";
+    title.className = "agenda-update-notification__title";
+    title.dataset.agendaUpdateTitle = "";
+    message.className = "agenda-update-notification__message";
+    message.dataset.agendaUpdateMessage = "";
+
+    action.className = "agenda-update-notification__action";
+    action.type = "button";
+    action.dataset.agendaUpdateAction = "";
+    action.textContent = "Ver agenda";
+
+    close.className = "agenda-update-notification__close";
+    close.type = "button";
+    close.setAttribute("aria-label", "Fechar notificação");
+    close.dataset.agendaUpdateClose = "";
+
+    closeIcon.className = "material-symbols-outlined";
+    closeIcon.setAttribute("aria-hidden", "true");
+    closeIcon.textContent = "close";
+
+    content.append(title, message);
+    close.appendChild(closeIcon);
+    surface.append(dot, content, action, close);
+    notification.appendChild(surface);
+    document.body.appendChild(notification);
+
+    action.addEventListener("click", () => {
+        closeAgendaUpdateNotification();
+        navigateToAgendaSection();
+    });
+
+    close.addEventListener("click", closeAgendaUpdateNotification);
+    notification.addEventListener("mouseenter", clearAgendaUpdateNotificationTimer);
+    notification.addEventListener("focusin", clearAgendaUpdateNotificationTimer);
+    notification.addEventListener("mouseleave", scheduleAgendaUpdateNotificationDismiss);
+    notification.addEventListener("focusout", scheduleAgendaUpdateNotificationDismiss);
+    notification.addEventListener("touchstart", clearAgendaUpdateNotificationTimer, {
+        passive: true,
+    });
+
+    agendaUpdateNotification = notification;
+
+    return notification;
+}
+
+function clearAgendaUpdateNotificationTimer() {
+    if (!agendaUpdateNotificationTimer) return;
+
+    clearTimeout(agendaUpdateNotificationTimer);
+    agendaUpdateNotificationTimer = null;
+}
+
+function scheduleAgendaUpdateNotificationDismiss() {
+    clearAgendaUpdateNotificationTimer();
+
+    if (!agendaUpdateNotification?.classList.contains("is-dismissible")) {
+        return;
+    }
+
+    agendaUpdateNotificationTimer = setTimeout(() => {
+        closeAgendaUpdateNotification();
+    }, AGENDA_UPDATE_NOTIFICATION_DELAY);
+}
+
+function showAgendaUpdateNotification({ message = "", showAction = true }) {
+    const notification = getAgendaUpdateNotification();
+    const title = notification.querySelector("[data-agenda-update-title]");
+    const description = notification.querySelector("[data-agenda-update-message]");
+    const action = notification.querySelector("[data-agenda-update-action]");
+
+    clearAgendaUpdateNotificationTimer();
+
+    if (agendaUpdateNotificationCloseTimer) {
+        clearTimeout(agendaUpdateNotificationCloseTimer);
+        agendaUpdateNotificationCloseTimer = null;
+    }
+
+    title.textContent = "A agenda foi atualizada";
+    description.textContent = message;
+    description.hidden = !message;
+    action.hidden = !showAction;
+
+    notification.hidden = false;
+    notification.classList.remove("is-visible", "is-hiding", "is-dismissible");
+
+    if (showAction) {
+        notification.classList.add("is-dismissible");
+    }
+
+    requestAnimationFrame(() => {
+        notification.classList.add("is-visible");
+        scheduleAgendaUpdateNotificationDismiss();
+    });
+}
+
+function closeAgendaUpdateNotification() {
+    if (!agendaUpdateNotification || agendaUpdateNotification.hidden) return;
+
+    clearAgendaUpdateNotificationTimer();
+    agendaUpdateNotification.classList.add("is-hiding");
+    agendaUpdateNotification.classList.remove("is-visible");
+
+    agendaUpdateNotificationCloseTimer = setTimeout(() => {
+        if (!agendaUpdateNotification) return;
+
+        agendaUpdateNotification.hidden = true;
+        agendaUpdateNotification.classList.remove("is-hiding", "is-dismissible");
+        agendaUpdateNotificationCloseTimer = null;
+    }, AGENDA_UPDATE_NOTIFICATION_EXIT_DELAY);
+}
+
+function navigateToAgendaSection() {
+    if (!agendaSection) return;
+
+    if (typeof navigateToPageSection === "function") {
+        navigateToPageSection("#fique-por-dentro", agendaSection);
+        return;
+    }
+
+    agendaSection.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+            ? "auto"
+            : "smooth",
+        block: "start",
+    });
+}
+
+function renderHomeTimeline(events, referenceDate, highlightedIds = new Set()) {
     if (!agendaTimeline) return;
 
     agendaTimeline.innerHTML = "";
@@ -297,11 +555,24 @@ function renderHomeTimeline(events, referenceDate) {
 
         item.className = "parish-agenda__timeline-item";
         item.classList.add(`parish-agenda__timeline-item--${status}`);
+
+        if (highlightedIds.has(evento.id)) {
+            item.classList.add("parish-agenda__timeline-item--updated");
+        }
+
         marker.className = "parish-agenda__timeline-marker";
 
         item.append(marker, createEventCard(evento, status));
         agendaTimeline.appendChild(item);
     });
+}
+
+function clearAgendaUpdatedHighlights() {
+    agendaTimeline
+        ?.querySelectorAll(".parish-agenda__timeline-item--updated")
+        .forEach((item) => {
+            item.classList.remove("parish-agenda__timeline-item--updated");
+        });
 }
 
 function renderRemainingWeekEvents(totalEvents) {
@@ -468,10 +739,125 @@ function getLocalAgendaEvents() {
     return window.agendaEventos;
 }
 
+async function obterAgendaDados() {
+    return getLocalAgendaEvents();
+}
+
 async function carregarAgenda() {
-    agendaEventos = sortEvents(getLocalAgendaEvents().map(normalizeEvent));
+    const eventos = await obterAgendaDados();
+
+    agendaEventos = sortEvents(eventos.map(normalizeEvent));
 
     return agendaEventos;
+}
+
+function renderAgendaView(events, referenceDate = new Date(), highlightedIds = new Set()) {
+    const weekRange = getWeekRange(referenceDate);
+    const weekEvents = events.filter((evento) => {
+        return isEventInRange(evento, weekRange.start, weekRange.end);
+    });
+    const homeEvents = weekEvents.slice(0, AGENDA_HOME_EVENT_LIMIT);
+
+    renderWeekRange(weekRange);
+    renderHomeTimeline(homeEvents, referenceDate, highlightedIds);
+    renderRemainingWeekEvents(weekEvents.length);
+
+    if (highlightedIds.size) {
+        setTimeout(clearAgendaUpdatedHighlights, AGENDA_HIGHLIGHT_CLEAR_DELAY);
+    }
+}
+
+function applyAgendaEventVersion(events, signatures, highlightedIds = new Set()) {
+    const scrollY = window.scrollY;
+
+    agendaEventos = events;
+    agendaEventSignatures = signatures;
+
+    renderAgendaView(agendaEventos, new Date(), highlightedIds);
+    window.scrollTo(0, scrollY);
+}
+
+function applyPendingAgendaEvents() {
+    if (!agendaEventosPendentes) return;
+
+    const pendingEvents = agendaEventosPendentes.events;
+    const pendingSignatures = agendaEventosPendentes.signatures;
+    const pendingChangedIds = agendaEventosPendentes.changedIds;
+    const scrollY = window.scrollY;
+
+    agendaEventosPendentes = null;
+    closeAgendaUpdateNotification();
+    applyAgendaEventVersion(pendingEvents, pendingSignatures, pendingChangedIds);
+    window.scrollTo(0, scrollY);
+}
+
+async function consultarAtualizacaoSilenciosaAgenda() {
+    if (agendaSilentUpdateInProgress) return false;
+
+    agendaSilentUpdateInProgress = true;
+
+    try {
+        const eventos = await obterAgendaDados();
+        const nextEvents = sortEvents(eventos.map(normalizeEvent));
+        const nextSignatures = createAgendaSignatureMap(nextEvents);
+
+        if (!hasAgendaChanged(agendaEventSignatures, nextSignatures)) {
+            return false;
+        }
+
+        const changedIds = getChangedAgendaEventIds(
+            agendaEventSignatures,
+            nextSignatures,
+        );
+
+        if (isAgendaModalOpen()) {
+            agendaEventosPendentes = {
+                events: nextEvents,
+                signatures: nextSignatures,
+                changedIds,
+            };
+
+            showAgendaUpdateNotification({
+                message: "Feche esta janela para visualizar as alterações.",
+                showAction: false,
+            });
+
+            return true;
+        }
+
+        if (isAgendaSectionVisible()) {
+            renderAgendaState("Atualizando agenda...", "updating");
+
+            requestAnimationFrame(() => {
+                applyAgendaEventVersion(nextEvents, nextSignatures, changedIds);
+            });
+
+            return true;
+        }
+
+        applyAgendaEventVersion(nextEvents, nextSignatures, changedIds);
+        showAgendaUpdateNotification({
+            showAction: true,
+        });
+
+        return true;
+    } catch (error) {
+        if (!agendaEventos.length) {
+            renderAgendaError();
+        }
+
+        return false;
+    } finally {
+        agendaSilentUpdateInProgress = false;
+    }
+}
+
+function startAgendaSilentPolling() {
+    if (!AGENDA_SILENT_POLLING_ENABLED) return;
+
+    setInterval(() => {
+        consultarAtualizacaoSilenciosaAgenda();
+    }, AGENDA_SILENT_POLL_INTERVAL);
 }
 
 function unlockAgendaModalScroll() {
@@ -628,6 +1014,8 @@ function closeAgendaModal() {
         ) {
             agendaModalLastFocusedElement.focus({ preventScroll: true });
         }
+
+        applyPendingAgendaEvents();
     }, AGENDA_MODAL_CLOSE_TRANSITION_DELAY);
 }
 
@@ -652,15 +1040,22 @@ async function renderAgenda() {
 
     const referenceDate = new Date();
     const weekRange = getWeekRange(referenceDate);
-    const normalizedEvents = await carregarAgenda();
-    const weekEvents = normalizedEvents.filter((evento) => {
-        return isEventInRange(evento, weekRange.start, weekRange.end);
-    });
-    const homeEvents = weekEvents.slice(0, AGENDA_HOME_EVENT_LIMIT);
+    let normalizedEvents = [];
 
     renderWeekRange(weekRange);
-    renderHomeTimeline(homeEvents, referenceDate);
-    renderRemainingWeekEvents(weekEvents.length);
+    renderAgendaLoading();
+    renderRemainingWeekEvents(0);
+
+    try {
+        normalizedEvents = await carregarAgenda();
+    } catch (error) {
+        renderAgendaError();
+        renderRemainingWeekEvents(0);
+        return;
+    }
+
+    agendaEventSignatures = createAgendaSignatureMap(normalizedEvents);
+    renderAgendaView(normalizedEvents, referenceDate);
 }
 
 agendaOpenButton?.addEventListener("click", openAgendaModal);
@@ -703,3 +1098,4 @@ document.addEventListener("keydown", (event) => {
 });
 
 renderAgenda();
+startAgendaSilentPolling();
