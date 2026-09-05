@@ -178,7 +178,7 @@ function finishInternalNavigation(link, href) {
 
     if (!target) return;
 
-    startControlledSectionNavigation();
+    startControlledSectionNavigation(href);
     closeMenu({ keepHeaderVisible: false });
     navigateToPageSection(href, target);
 }
@@ -428,6 +428,8 @@ nav?.addEventListener(
 let lastScrollY = window.scrollY;
 let menuScrollActive = false;
 let sectionNavigationFrame = null;
+let sectionNavigationHref = null;
+let forceHeaderHiddenAfterSectionNavigation = false;
 let scrollTicking = false;
 const heroSection = document.querySelector("[data-hero-carousel]");
 
@@ -461,11 +463,14 @@ function updateHeaderSurface(isOverHero) {
     header?.classList.toggle("header-over-hero", isOverHero);
 }
 
+function clearForcedHeaderHiddenState() {
+    forceHeaderHiddenAfterSectionNavigation = false;
+}
+
 function getSectionScrollTarget(target, href) {
     if (href === "#inicio") return 0;
 
-    const scrollMarginTop =
-        Number.parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+    const scrollMarginTop = menuScrollActive ? 24 : 0;
     const targetTop =
         target.getBoundingClientRect().top + window.scrollY - scrollMarginTop;
     const maxScroll =
@@ -475,21 +480,36 @@ function getSectionScrollTarget(target, href) {
 }
 
 function finishSectionNavigation() {
+    const shouldShowHeader = sectionNavigationHref === "#inicio";
+
     window.__suspendHeaderVisibility = false;
     menuScrollActive = false;
     sectionNavigationFrame = null;
+    sectionNavigationHref = null;
+    forceHeaderHiddenAfterSectionNavigation = !shouldShowHeader;
     lastScrollY = window.scrollY;
     updateHeaderSurface(isHeroStillInView());
 
-    if (!isHeroStillInView()) {
+    if (shouldShowHeader) {
+        header?.classList.remove("header-hidden");
+    } else {
         header?.classList.add("header-hidden");
     }
 }
 
-function startControlledSectionNavigation() {
+function startControlledSectionNavigation(href) {
+    const shouldShowHeader = href === "#inicio";
+
     menuScrollActive = true;
+    sectionNavigationHref = href;
+    forceHeaderHiddenAfterSectionNavigation = !shouldShowHeader;
     window.__suspendHeaderVisibility = true;
-    header?.classList.add("header-hidden");
+
+    if (shouldShowHeader) {
+        header?.classList.remove("header-hidden");
+    } else {
+        header?.classList.add("header-hidden");
+    }
 }
 
 function waitForSectionScrollToSettle(targetY) {
@@ -527,7 +547,7 @@ function navigateToPageSection(href, target) {
     ).matches;
     const targetY = getSectionScrollTarget(target, href);
 
-    startControlledSectionNavigation();
+    startControlledSectionNavigation(href);
 
     if (sectionNavigationFrame) {
         cancelAnimationFrame(sectionNavigationFrame);
@@ -556,6 +576,14 @@ function updateHeaderVisibility() {
     updateHeaderSurface(isOverHero);
 
     if (isHeaderVisibilitySuspended()) {
+        lastScrollY = currentY;
+        scrollTicking = false;
+
+        return;
+    }
+
+    if (forceHeaderHiddenAfterSectionNavigation && currentY > 0) {
+        header?.classList.add("header-hidden");
         lastScrollY = currentY;
         scrollTicking = false;
 
@@ -614,6 +642,30 @@ window.addEventListener(
     },
     { passive: true },
 );
+
+window.addEventListener("wheel", clearForcedHeaderHiddenState, {
+    passive: true,
+});
+
+window.addEventListener("touchstart", clearForcedHeaderHiddenState, {
+    passive: true,
+});
+
+window.addEventListener("keydown", (event) => {
+    if (
+        [
+            "ArrowUp",
+            "ArrowDown",
+            "PageUp",
+            "PageDown",
+            "Home",
+            "End",
+            " ",
+        ].includes(event.key)
+    ) {
+        clearForcedHeaderHiddenState();
+    }
+});
 
 updateHeaderVisibility();
 
