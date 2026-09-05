@@ -470,9 +470,7 @@ function clearForcedHeaderHiddenState() {
 function getSectionScrollTarget(target, href) {
     if (href === "#inicio") return 0;
 
-    const scrollMarginTop = menuScrollActive ? 24 : 0;
-    const targetTop =
-        target.getBoundingClientRect().top + window.scrollY - scrollMarginTop;
+    const targetTop = target.getBoundingClientRect().top + window.scrollY;
     const maxScroll =
         document.documentElement.scrollHeight - window.innerHeight;
 
