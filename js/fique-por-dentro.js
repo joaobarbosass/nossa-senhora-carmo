@@ -10,7 +10,7 @@ const agendaModalOverlay = document.querySelector("[data-agenda-modal-overlay]")
 const agendaModalClose = document.querySelector("[data-agenda-close]");
 const agendaModalContent = document.querySelector("[data-agenda-modal-content]");
 
-const agendaEventos = window.agendaEventos || [];
+let agendaEventos = [];
 const AGENDA_HOME_EVENT_LIMIT = 5;
 const AGENDA_MODAL_CLOSE_TRANSITION_DELAY = 240;
 
@@ -175,12 +175,17 @@ function formatEventTime(evento) {
 function getEventStatus(evento, referenceDate = new Date()) {
     const todayStart = getStartOfDay(referenceDate);
     const todayEnd = getEndOfDay(referenceDate);
+    const tomorrowStart = getStartOfDay(addDays(referenceDate, 1));
+    const tomorrowEnd = getEndOfDay(tomorrowStart);
     const isToday =
         evento.startDate <= todayEnd && evento.endDate >= todayStart;
+    const isTomorrow =
+        evento.startDate <= tomorrowEnd && evento.endDate >= tomorrowStart;
     const isPast = evento.endDate < referenceDate;
 
     if (isPast) return "past";
     if (isToday) return "today";
+    if (isTomorrow) return "tomorrow";
 
     return "future";
 }
@@ -237,11 +242,17 @@ function createEventCard(evento, status, isCompact = false) {
         content.appendChild(description);
     }
 
-    if (status === "today" || status === "past") {
+    const statusLabels = {
+        past: "Realizado",
+        today: "Hoje",
+        tomorrow: "Amanhã",
+    };
+
+    if (statusLabels[status]) {
         const statusLabel = document.createElement("span");
 
         statusLabel.className = "agenda-event__status";
-        statusLabel.textContent = status === "today" ? "Hoje" : "Realizado";
+        statusLabel.textContent = statusLabels[status];
         content.appendChild(statusLabel);
     }
 
@@ -449,6 +460,20 @@ function lockAgendaModalScroll() {
     });
 }
 
+function getLocalAgendaEvents() {
+    if (!Array.isArray(window.agendaEventos)) {
+        return [];
+    }
+
+    return window.agendaEventos;
+}
+
+async function carregarAgenda() {
+    agendaEventos = sortEvents(getLocalAgendaEvents().map(normalizeEvent));
+
+    return agendaEventos;
+}
+
 function unlockAgendaModalScroll() {
     const scrollY = agendaModalLockedScrollY;
 
@@ -615,20 +640,19 @@ function getAgendaFocusableElements() {
 }
 
 function getVisibleModalEvents(referenceDate = new Date()) {
-    const normalizedEvents = sortEvents(agendaEventos.map(normalizeEvent));
     const currentWeek = getWeekRange(referenceDate);
 
-    return normalizedEvents.filter((evento) => {
+    return agendaEventos.filter((evento) => {
         return evento.endDate >= currentWeek.start;
     });
 }
 
-function renderAgenda() {
+async function renderAgenda() {
     if (!agendaSection) return;
 
     const referenceDate = new Date();
     const weekRange = getWeekRange(referenceDate);
-    const normalizedEvents = sortEvents(agendaEventos.map(normalizeEvent));
+    const normalizedEvents = await carregarAgenda();
     const weekEvents = normalizedEvents.filter((evento) => {
         return isEventInRange(evento, weekRange.start, weekRange.end);
     });
