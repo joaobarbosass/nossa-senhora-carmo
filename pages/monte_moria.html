@@ -54,13 +54,19 @@
         <div id="header-container"></div>
 
         <!-- Conteúdo da página -->
-        <main class="page-content">
-            <section class="page-container">
+        <main class="page-content stained-page">
+            <section class="page-container" aria-labelledby="page-title">
                 <div class="page-modal">
-                    <div class="page-title">
-                        <span></span>
-                        <h1>Monte Moria</h1>
-                        <span></span>
+                    <div class="stained-page__intro">
+                        <div class="page-title">
+                            <span></span>
+                            <h1 id="page-title">Monte Moria</h1>
+                            <span></span>
+                        </div>
+
+                        <p class="stained-page__subtitle">
+                            Vitrais da Paróquia Nossa Senhora do Carmo.
+                        </p>
                     </div>
 
                     <div class="page-video">
@@ -68,7 +74,7 @@
                             width="560"
                             height="315"
                             src="https://www.youtube.com/embed/0SkdIaA5UOE?si=6SFsFglsmsYvXAqG"
-                            title="YouTube video player"
+                            title="Vídeo sobre o vitral Monte Moria"
                             frameborder="0"
                             allow="
                                 accelerometer;
@@ -83,6 +89,24 @@
                             allowfullscreen
                         ></iframe>
                     </div>
+
+                    <nav
+                        class="stained-page__navigation"
+                        aria-label="Navegação entre vitrais"
+                    >
+                        <span class="stained-page__navigation-title">
+                            Conheça os outros vitrais
+                        </span>
+
+                        <div class="stained-page__links">
+                            <a href="./monte_calvario.html">Monte Calvário</a>
+                            <a href="./monte_carmelo.html">Monte Carmelo</a>
+                            <a href="./monte_horeb.html">Monte Horeb</a>
+                            <a href="./monte_moria.html" aria-current="page">
+                                Monte Moria
+                            </a>
+                        </div>
+                    </nav>
                 </div>
             </section>
         </main>
