@@ -17,6 +17,7 @@ let agendaSilentUpdateInProgress = false;
 let agendaUpdateNotification = null;
 let agendaUpdateNotificationTimer = null;
 let agendaUpdateNotificationCloseTimer = null;
+let agendaUpdateNotificationSwipe = null;
 const AGENDA_HOME_EVENT_LIMIT = 5;
 const AGENDA_MODAL_CLOSE_TRANSITION_DELAY = 240;
 const AGENDA_SILENT_POLL_INTERVAL = 5 * 60 * 1000;
@@ -24,6 +25,11 @@ const AGENDA_SILENT_POLLING_ENABLED = false;
 const AGENDA_UPDATE_NOTIFICATION_DELAY = 9000;
 const AGENDA_UPDATE_NOTIFICATION_EXIT_DELAY = 360;
 const AGENDA_HIGHLIGHT_CLEAR_DELAY = 650;
+const AGENDA_SWIPE_START_THRESHOLD = 8;
+const AGENDA_SWIPE_DIRECTION_RATIO = 1.2;
+const AGENDA_SWIPE_DISMISS_RATIO = 0.3;
+const AGENDA_SWIPE_MIN_DISMISS_DISTANCE = 72;
+const AGENDA_SWIPE_EXIT_DELAY = 220;
 
 let agendaModalLastFocusedElement = null;
 let agendaModalLockedScrollY = 0;
@@ -447,9 +453,10 @@ function getAgendaUpdateNotification() {
     notification.addEventListener("focusin", clearAgendaUpdateNotificationTimer);
     notification.addEventListener("mouseleave", scheduleAgendaUpdateNotificationDismiss);
     notification.addEventListener("focusout", scheduleAgendaUpdateNotificationDismiss);
-    notification.addEventListener("touchstart", clearAgendaUpdateNotificationTimer, {
-        passive: true,
-    });
+    surface.addEventListener("pointerdown", startAgendaNotificationSwipe);
+    surface.addEventListener("pointermove", moveAgendaNotificationSwipe);
+    surface.addEventListener("pointerup", endAgendaNotificationSwipe);
+    surface.addEventListener("pointercancel", cancelAgendaNotificationSwipe);
 
     agendaUpdateNotification = notification;
 
@@ -461,6 +468,178 @@ function clearAgendaUpdateNotificationTimer() {
 
     clearTimeout(agendaUpdateNotificationTimer);
     agendaUpdateNotificationTimer = null;
+}
+
+function resetAgendaNotificationSwipeStyles(surface) {
+    surface?.style.removeProperty("--agenda-notification-drag-x");
+    surface?.style.removeProperty("--agenda-notification-drag-opacity");
+}
+
+function releaseAgendaNotificationSwipePointer(surface, pointerId) {
+    try {
+        surface?.releasePointerCapture?.(pointerId);
+    } catch (error) {
+        return;
+    }
+}
+
+function getAgendaSwipeDismissDistance(surface) {
+    const width = surface?.offsetWidth || 0;
+
+    return Math.max(
+        width * AGENDA_SWIPE_DISMISS_RATIO,
+        AGENDA_SWIPE_MIN_DISMISS_DISTANCE,
+    );
+}
+
+function finishAgendaNotificationSwipeReset(surface) {
+    agendaUpdateNotification?.classList.add("is-swipe-returning");
+    agendaUpdateNotification?.classList.remove("is-dragging");
+
+    resetAgendaNotificationSwipeStyles(surface);
+    scheduleAgendaUpdateNotificationDismiss();
+
+    setTimeout(() => {
+        agendaUpdateNotification?.classList.remove("is-swipe-returning");
+    }, AGENDA_SWIPE_EXIT_DELAY);
+}
+
+function finishAgendaNotificationSwipeDismiss(surface, direction) {
+    const notificationWidth = agendaUpdateNotification?.offsetWidth || 0;
+    const surfaceWidth = surface?.offsetWidth || 0;
+    const exitDistance = direction * (notificationWidth + surfaceWidth);
+
+    clearAgendaUpdateNotificationTimer();
+    agendaUpdateNotification?.classList.add("is-swipe-dismissing");
+    agendaUpdateNotification?.classList.remove("is-dragging", "is-visible");
+    surface?.style.setProperty(
+        "--agenda-notification-drag-x",
+        `${exitDistance}px`,
+    );
+    surface?.style.setProperty("--agenda-notification-drag-opacity", "0");
+
+    agendaUpdateNotificationCloseTimer = setTimeout(() => {
+        if (!agendaUpdateNotification) return;
+
+        agendaUpdateNotification.hidden = true;
+        agendaUpdateNotification.classList.remove(
+            "is-swipe-dismissing",
+            "is-dismissible",
+        );
+        resetAgendaNotificationSwipeStyles(surface);
+        agendaUpdateNotificationCloseTimer = null;
+    }, AGENDA_SWIPE_EXIT_DELAY);
+}
+
+function isAgendaSwipeInteractiveTarget(target) {
+    return Boolean(
+        target.closest(
+            ".agenda-update-notification__action, .agenda-update-notification__close",
+        ),
+    );
+}
+
+function startAgendaNotificationSwipe(event) {
+    if (event.pointerType !== "touch") return;
+    if (!agendaUpdateNotification?.classList.contains("is-visible")) return;
+    if (isAgendaSwipeInteractiveTarget(event.target)) return;
+
+    clearAgendaUpdateNotificationTimer();
+
+    agendaUpdateNotificationSwipe = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        currentX: 0,
+        intent: null,
+        surface: event.currentTarget,
+    };
+}
+
+function moveAgendaNotificationSwipe(event) {
+    const swipe = agendaUpdateNotificationSwipe;
+
+    if (!swipe || event.pointerId !== swipe.pointerId) return;
+
+    const deltaX = event.clientX - swipe.startX;
+    const deltaY = event.clientY - swipe.startY;
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+
+    if (!swipe.intent) {
+        if (Math.max(absX, absY) < AGENDA_SWIPE_START_THRESHOLD) return;
+
+        if (absY > absX * AGENDA_SWIPE_DIRECTION_RATIO) {
+            agendaUpdateNotificationSwipe = null;
+            scheduleAgendaUpdateNotificationDismiss();
+            return;
+        }
+
+        if (absX <= absY * AGENDA_SWIPE_DIRECTION_RATIO) return;
+
+        swipe.intent = "horizontal";
+        swipe.surface.setPointerCapture?.(event.pointerId);
+        agendaUpdateNotification?.classList.add("is-dragging");
+    }
+
+    event.preventDefault();
+
+    swipe.currentX = deltaX;
+
+    const width = swipe.surface.offsetWidth || 1;
+    const opacity = Math.max(0.28, 1 - Math.min(absX / (width * 0.9), 0.72));
+
+    swipe.surface.style.setProperty(
+        "--agenda-notification-drag-x",
+        `${deltaX}px`,
+    );
+    swipe.surface.style.setProperty(
+        "--agenda-notification-drag-opacity",
+        String(opacity),
+    );
+}
+
+function endAgendaNotificationSwipe(event) {
+    const swipe = agendaUpdateNotificationSwipe;
+
+    if (!swipe || event.pointerId !== swipe.pointerId) return;
+
+    agendaUpdateNotificationSwipe = null;
+    releaseAgendaNotificationSwipePointer(swipe.surface, event.pointerId);
+
+    if (swipe.intent !== "horizontal") {
+        scheduleAgendaUpdateNotificationDismiss();
+        return;
+    }
+
+    const shouldDismiss =
+        Math.abs(swipe.currentX) >= getAgendaSwipeDismissDistance(swipe.surface);
+
+    if (shouldDismiss) {
+        finishAgendaNotificationSwipeDismiss(
+            swipe.surface,
+            swipe.currentX < 0 ? -1 : 1,
+        );
+        return;
+    }
+
+    finishAgendaNotificationSwipeReset(swipe.surface);
+}
+
+function cancelAgendaNotificationSwipe(event) {
+    const swipe = agendaUpdateNotificationSwipe;
+
+    if (!swipe || event.pointerId !== swipe.pointerId) return;
+
+    agendaUpdateNotificationSwipe = null;
+    releaseAgendaNotificationSwipePointer(swipe.surface, event.pointerId);
+
+    if (swipe.intent === "horizontal") {
+        finishAgendaNotificationSwipeReset(swipe.surface);
+        return;
+    }
+
+    scheduleAgendaUpdateNotificationDismiss();
 }
 
 function scheduleAgendaUpdateNotificationDismiss() {
@@ -480,6 +659,7 @@ function showAgendaUpdateNotification({ message = "", showAction = true }) {
     const title = notification.querySelector("[data-agenda-update-title]");
     const description = notification.querySelector("[data-agenda-update-message]");
     const action = notification.querySelector("[data-agenda-update-action]");
+    const surface = notification.querySelector(".agenda-update-notification__surface");
 
     clearAgendaUpdateNotificationTimer();
 
@@ -494,7 +674,15 @@ function showAgendaUpdateNotification({ message = "", showAction = true }) {
     action.hidden = !showAction;
 
     notification.hidden = false;
-    notification.classList.remove("is-visible", "is-hiding", "is-dismissible");
+    notification.classList.remove(
+        "is-visible",
+        "is-hiding",
+        "is-dismissible",
+        "is-dragging",
+        "is-swipe-returning",
+        "is-swipe-dismissing",
+    );
+    resetAgendaNotificationSwipeStyles(surface);
 
     if (showAction) {
         notification.classList.add("is-dismissible");
@@ -509,9 +697,20 @@ function showAgendaUpdateNotification({ message = "", showAction = true }) {
 function closeAgendaUpdateNotification() {
     if (!agendaUpdateNotification || agendaUpdateNotification.hidden) return;
 
+    const surface = agendaUpdateNotification.querySelector(
+        ".agenda-update-notification__surface",
+    );
+
+    agendaUpdateNotificationSwipe = null;
     clearAgendaUpdateNotificationTimer();
     agendaUpdateNotification.classList.add("is-hiding");
-    agendaUpdateNotification.classList.remove("is-visible");
+    agendaUpdateNotification.classList.remove(
+        "is-visible",
+        "is-dragging",
+        "is-swipe-returning",
+        "is-swipe-dismissing",
+    );
+    resetAgendaNotificationSwipeStyles(surface);
 
     agendaUpdateNotificationCloseTimer = setTimeout(() => {
         if (!agendaUpdateNotification) return;
