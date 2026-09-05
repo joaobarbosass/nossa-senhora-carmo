@@ -6,6 +6,7 @@ const basePath = isInPages ? "../" : "./";
 
 const MINIMUM_LOADING_TIME = 650;
 const MAXIMUM_LOADING_TIME = 1200;
+const ESSENTIAL_IFRAME_TIMEOUT = 1500;
 
 async function loadComponent(id, file) {
     const container = document.getElementById(id);
@@ -328,6 +329,31 @@ function waitForEssentialImages() {
     return Promise.all(sources.map(waitForImageSource));
 }
 
+function waitForIframeLoad(iframe) {
+    return new Promise((resolve) => {
+        const timeout = setTimeout(resolve, ESSENTIAL_IFRAME_TIMEOUT);
+
+        iframe.addEventListener(
+            "load",
+            () => {
+                clearTimeout(timeout);
+                resolve();
+            },
+            { once: true },
+        );
+    });
+}
+
+function waitForEssentialIframes() {
+    const iframes = Array.from(document.querySelectorAll(".page-video iframe"));
+
+    if (!iframes.length) {
+        return Promise.resolve();
+    }
+
+    return Promise.all(iframes.map(waitForIframeLoad));
+}
+
 async function init() {
     await loadLayoutComponents();
 
@@ -343,7 +369,11 @@ async function init() {
     applyMenuCascade();
     await loadMenuScript();
     await waitForLayoutReady();
-    await Promise.all([waitForEssentialImages(), waitForHeroReady()]);
+    await Promise.all([
+        waitForEssentialImages(),
+        waitForHeroReady(),
+        waitForEssentialIframes(),
+    ]);
 }
 
 async function startApp() {
