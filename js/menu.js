@@ -17,6 +17,7 @@ const MENU_LINK_IDLE = "is-idle";
 const MENU_LINK_HOVER = "is-hover";
 const MENU_LINK_LOADING = "is-loading";
 const MENU_LINK_COMPLETED = "is-completed";
+const MENU_LINK_ACTIVE = "is-active";
 const pendingLinkActions = new WeakMap();
 
 /* ── TOQUE: DIFERENCIAÇÃO SCROLL/CLIQUE (estado global do menu) ── */
@@ -94,6 +95,7 @@ function openMenu() {
     overlay?.setAttribute("aria-hidden", "false");
 
     links?.forEach((link) => setLinkState(link, MENU_LINK_IDLE));
+    updateActiveMenuLink();
 
     requestAnimationFrame(() => {
         menuClose?.focus();
@@ -284,6 +286,9 @@ const links = Array.from(document.querySelectorAll(".links_header a")).filter(
         return window.getComputedStyle(li).display !== "none";
     },
 );
+const sectionMenuLinks = links.filter(
+    (link) => isInternalHref(link.hash) && !link.closest(".menu-cta-button"),
+);
 
 links.forEach((link) => {
     ensureMenuLinkText(link);
@@ -337,6 +342,81 @@ links.forEach((link) => {
         navigateByHref(link, href);
     });
 });
+
+function clearActiveMenuLinks() {
+    links.forEach((link) => {
+        link.classList.remove(MENU_LINK_ACTIVE);
+        link.removeAttribute("aria-current");
+    });
+}
+
+function getCurrentSectionId() {
+    const sectionEntries = sectionMenuLinks
+        .map((link) => {
+            const target = document.querySelector(link.hash);
+
+            if (!target) return null;
+
+            return {
+                id: link.hash.slice(1),
+                top: target.getBoundingClientRect().top,
+            };
+        })
+        .filter(Boolean);
+
+    if (!sectionEntries.length) return null;
+
+    const referenceLine = getHeaderHeight() + 96;
+    let currentSection = sectionEntries[0];
+
+    sectionEntries.forEach((section) => {
+        if (section.top <= referenceLine) {
+            currentSection = section;
+        }
+    });
+
+    return currentSection.id;
+}
+
+function updateActivePageLink() {
+    const currentPath = window.location.pathname.split("/").pop();
+    const currentLink = links.find((link) => {
+        const href = link.getAttribute("href");
+
+        if (!href || isInternalHref(href)) return false;
+
+        return href.split("/").pop() === currentPath;
+    });
+
+    if (!currentLink) return;
+
+    currentLink.classList.add(MENU_LINK_ACTIVE);
+    currentLink.setAttribute("aria-current", "page");
+}
+
+function updateActiveSectionLink() {
+    const currentSectionId = getCurrentSectionId();
+
+    if (!currentSectionId) return;
+
+    sectionMenuLinks.forEach((link) => {
+        const isCurrent = link.hash === `#${currentSectionId}`;
+
+        link.classList.toggle(MENU_LINK_ACTIVE, isCurrent);
+
+        if (isCurrent) {
+            link.setAttribute("aria-current", "location");
+        } else {
+            link.removeAttribute("aria-current");
+        }
+    });
+}
+
+function updateActiveMenuLink() {
+    clearActiveMenuLinks();
+    updateActivePageLink();
+    updateActiveSectionLink();
+}
 
 document.addEventListener("click", (event) => {
     const footerLink = event.target.closest("[data-footer-anchor]");
@@ -574,6 +654,7 @@ function updateHeaderVisibility() {
     const delta = currentY - lastScrollY;
     const isOverHero = isHeroStillInView();
 
+    updateActiveMenuLink();
     updateHeaderSurface(isOverHero);
 
     if (isHeaderVisibilitySuspended()) {
