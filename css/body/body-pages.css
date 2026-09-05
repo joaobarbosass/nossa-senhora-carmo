@@ -1,7 +1,11 @@
 .page-content {
+    --stained-page-top-space: clamp(34px, 6vw, 72px);
+
     position: relative;
     min-height: calc(100vh - var(--header-height));
-    padding: clamp(34px, 6vw, 72px) 0 clamp(58px, 8vw, 96px);
+    margin-top: calc(var(--header-height) * -1);
+    padding: calc(var(--header-height) + var(--stained-page-top-space)) 0
+        clamp(58px, 8vw, 96px);
     overflow: hidden;
     background:
         radial-gradient(
@@ -275,7 +279,9 @@
 
 @media (max-width: 820px) {
     .page-content {
-        padding: 34px 0 72px;
+        --stained-page-top-space: 34px;
+
+        padding-bottom: 72px;
     }
 
     .page-container {
@@ -309,7 +315,9 @@
 
 @media (max-width: 480px) {
     .page-content {
-        padding: 28px 0 62px;
+        --stained-page-top-space: 28px;
+
+        padding-bottom: 62px;
     }
 
     .page-container {

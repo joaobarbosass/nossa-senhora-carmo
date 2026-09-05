@@ -432,6 +432,7 @@ let sectionNavigationHref = null;
 let forceHeaderHiddenAfterSectionNavigation = false;
 let scrollTicking = false;
 const heroSection = document.querySelector("[data-hero-carousel]");
+const stainedPage = document.querySelector(".stained-page");
 
 const SCROLL_TOLERANCE = 5;
 const SECTION_NAVIGATION_SETTLE_TOLERANCE = 2;
@@ -447,7 +448,9 @@ function getHeaderHeight() {
 }
 
 function isHeroStillInView() {
-    if (!heroSection) return false;
+    if (!heroSection) {
+        return Boolean(stainedPage) && window.scrollY <= SCROLL_TOLERANCE;
+    }
 
     return heroSection.getBoundingClientRect().bottom > getHeaderHeight();
 }
