@@ -236,6 +236,7 @@ function keepPriestPageScrollLocked() {
 
 function closePriestModalFromPageChrome(event) {
     if (!priestModal?.classList.contains("active")) return;
+    if (event.target.closest?.(".agenda-update-notification")) return;
     if (priestModalDialog?.contains(event.target)) return;
 
     closePriestModal();

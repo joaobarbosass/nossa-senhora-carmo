@@ -1002,7 +1002,7 @@
     top: calc(env(safe-area-inset-top, 0px) + 22px);
     left: 50%;
     z-index: 3700;
-    width: min(420px, calc(100vw - 32px));
+    width: min(500px, calc(100vw - 32px));
     display: flex;
     justify-content: center;
     pointer-events: none;
@@ -1017,45 +1017,92 @@
     --agenda-notification-drag-x: 0px;
     --agenda-notification-drag-opacity: 0;
 
-    width: 42px;
-    min-height: 42px;
-    display: grid;
-    grid-template-columns: 10px minmax(0, 1fr) auto auto;
-    align-items: center;
-    gap: 10px;
+    position: relative;
+    width: 44px;
+    min-height: 44px;
+    display: block;
     overflow: hidden;
-    padding: 0 16px;
-    border: 1px solid rgba(212, 175, 55, 0.32);
+    padding: 0;
+    border: 1px solid rgba(212, 175, 55, 0);
     border-radius: 999px;
-    background: #f1e0dc;
+    background: #704431;
     color: #f1e0dc;
-    box-shadow: 0 16px 36px rgba(36, 22, 16, 0.2);
+    box-shadow:
+        0 10px 24px rgba(36, 22, 16, 0.16),
+        0 0 18px rgba(112, 68, 49, 0.18);
     opacity: var(--agenda-notification-drag-opacity);
     touch-action: pan-y;
-    transform: translateX(var(--agenda-notification-drag-x)) scale(0.88);
+    transform: translateX(var(--agenda-notification-drag-x)) scale(0.92);
     transition:
-        width 0.34s cubic-bezier(0.22, 1, 0.36, 1),
-        min-height 0.34s cubic-bezier(0.22, 1, 0.36, 1),
-        background 0.28s ease,
-        opacity 0.2s ease,
+        width 0.86s cubic-bezier(0.22, 1, 0.36, 1) 0.34s,
+        min-height 0.86s cubic-bezier(0.22, 1, 0.36, 1) 0.34s,
+        background 0.68s ease 0.52s,
+        border-color 0.6s ease 0.58s,
+        box-shadow 0.68s ease 0.52s,
+        opacity 0.24s ease,
         transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.agenda-update-notification__reveal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(500px, calc(100vw - 32px));
+    min-height: 64px;
+    display: grid;
+    grid-template-columns: 14px minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 14px;
+    padding: 0 14px 0 22px;
+    color: #f1e0dc;
+    pointer-events: auto;
+    transform: translate(-50%, -50%);
+    visibility: hidden;
+    transition: visibility 0s linear 0.34s;
+}
+
 .agenda-update-notification.is-visible .agenda-update-notification__surface {
-    width: 100%;
-    min-height: 58px;
-    background: rgba(36, 22, 16, 0.94);
+    width: min(500px, calc(100vw - 32px));
+    min-height: 64px;
+    border-color: rgba(212, 175, 55, 0.46);
+    background: rgba(36, 22, 16, 0.96);
+    box-shadow:
+        0 18px 42px rgba(36, 22, 16, 0.26),
+        inset 0 0 0 1px rgba(241, 224, 220, 0.04);
     --agenda-notification-drag-opacity: 1;
 
     pointer-events: auto;
     transform: translateX(var(--agenda-notification-drag-x)) scale(1);
 }
 
+body.agenda-modal-open .agenda-update-notification.is-visible .agenda-update-notification__surface {
+    cursor: pointer;
+}
+
+.agenda-update-notification.is-visible .agenda-update-notification__reveal,
+.agenda-update-notification.is-dragging .agenda-update-notification__reveal,
+.agenda-update-notification.is-swipe-returning .agenda-update-notification__reveal,
+.agenda-update-notification.is-swipe-dismissing .agenda-update-notification__reveal {
+    visibility: visible;
+}
+
+.agenda-update-notification.is-visible .agenda-update-notification__reveal {
+    transition-delay: 0.34s;
+}
+
+.agenda-update-notification.is-dragging .agenda-update-notification__reveal,
+.agenda-update-notification.is-swipe-returning .agenda-update-notification__reveal,
+.agenda-update-notification.is-swipe-dismissing .agenda-update-notification__reveal {
+    transition-delay: 0s;
+}
+
 .agenda-update-notification.is-dragging .agenda-update-notification__surface {
     transition:
-        width 0.34s cubic-bezier(0.22, 1, 0.36, 1),
-        min-height 0.34s cubic-bezier(0.22, 1, 0.36, 1),
-        background 0.28s ease;
+        width 0.86s cubic-bezier(0.22, 1, 0.36, 1) 0.34s,
+        min-height 0.86s cubic-bezier(0.22, 1, 0.36, 1) 0.34s,
+        background 0.68s ease 0.52s,
+        border-color 0.6s ease 0.58s,
+        box-shadow 0.68s ease 0.52s;
 }
 
 .agenda-update-notification.is-swipe-returning .agenda-update-notification__surface {
@@ -1065,46 +1112,55 @@
 }
 
 .agenda-update-notification.is-swipe-dismissing .agenda-update-notification__surface {
-    width: 100%;
-    min-height: 58px;
-    background: rgba(36, 22, 16, 0.94);
+    width: min(500px, calc(100vw - 32px));
+    min-height: 64px;
+    border-color: rgba(212, 175, 55, 0.46);
+    background: rgba(36, 22, 16, 0.96);
     transition:
         transform 0.2s ease,
         opacity 0.2s ease;
+}
+
+.agenda-update-notification.is-hiding .agenda-update-notification__surface {
+    width: 44px;
+    min-height: 44px;
+    border-color: rgba(212, 175, 55, 0);
+    background: #704431;
+    box-shadow:
+        0 10px 24px rgba(36, 22, 16, 0.16),
+        0 0 18px rgba(112, 68, 49, 0.18);
+    opacity: 0;
+    transform: translateX(var(--agenda-notification-drag-x)) scale(0.92);
+    transition:
+        width 0.42s cubic-bezier(0.22, 1, 0.36, 1) 0.12s,
+        min-height 0.42s cubic-bezier(0.22, 1, 0.36, 1) 0.12s,
+        background 0.34s ease 0.12s,
+        border-color 0.28s ease 0.12s,
+        box-shadow 0.34s ease 0.12s,
+        opacity 0.18s ease 0.76s,
+        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1) 0.12s;
+}
+
+.agenda-update-notification.is-hiding .agenda-update-notification__reveal {
+    visibility: hidden;
+    transition: visibility 0s linear 0.42s;
 }
 
 .agenda-update-notification__dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #d4af37;
-    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.14);
+    background: #e8c85a;
+    box-shadow:
+        0 0 0 5px rgba(212, 175, 55, 0.14),
+        0 0 14px rgba(232, 200, 90, 0.26);
 }
 
 .agenda-update-notification__content,
 .agenda-update-notification__action,
 .agenda-update-notification__close {
-    opacity: 0;
-    transform: translateY(4px);
-    transition:
-        opacity 0.18s ease,
-        transform 0.22s ease;
-}
-
-.agenda-update-notification.is-visible .agenda-update-notification__content,
-.agenda-update-notification.is-visible .agenda-update-notification__action,
-.agenda-update-notification.is-visible .agenda-update-notification__close {
     opacity: 1;
-    transform: translateY(0);
-    transition-delay: 0.14s;
-}
-
-.agenda-update-notification.is-hiding .agenda-update-notification__content,
-.agenda-update-notification.is-hiding .agenda-update-notification__action,
-.agenda-update-notification.is-hiding .agenda-update-notification__close {
-    opacity: 0;
-    transform: translateY(4px);
-    transition-delay: 0s;
+    transform: none;
 }
 
 .agenda-update-notification__content {
@@ -1117,7 +1173,8 @@
 .agenda-update-notification__title {
     overflow: hidden;
     color: #f1e0dc;
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 800;
     line-height: 1.1;
     text-overflow: ellipsis;
     text-transform: uppercase;
@@ -1139,23 +1196,25 @@
 }
 
 .agenda-update-notification__action {
-    min-height: 34px;
-    padding: 0 14px;
+    min-height: 38px;
+    padding: 0 18px;
+    border-color: rgba(212, 175, 55, 0.28);
     background: #f1e0dc;
     color: #543023;
     font-size: 12px;
     font-weight: 800;
     text-transform: uppercase;
     white-space: nowrap;
+    box-shadow: inset 0 0 0 1px rgba(255, 247, 240, 0.32);
 }
 
 .agenda-update-notification__close {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     display: grid;
     place-items: center;
     padding: 0;
-    background: rgba(241, 224, 220, 0.1);
+    background: rgba(241, 224, 220, 0.08);
     color: #f1e0dc;
 }
 
@@ -2930,12 +2989,25 @@ body.community-modal-open .page-content {
     }
 
     .agenda-update-notification__surface {
-        gap: 8px;
-        padding: 0 14px;
+        min-height: 44px;
     }
 
     .agenda-update-notification.is-visible .agenda-update-notification__surface {
+        width: calc(100vw - 24px);
         min-height: 56px;
+    }
+
+    .agenda-update-notification.is-swipe-dismissing .agenda-update-notification__surface {
+        width: calc(100vw - 24px);
+        min-height: 56px;
+    }
+
+    .agenda-update-notification__reveal {
+        width: calc(100vw - 24px);
+        min-height: 56px;
+        grid-template-columns: 12px minmax(0, 1fr) auto auto;
+        gap: 8px;
+        padding: 0 12px 0 18px;
     }
 
     .agenda-update-notification__title {
@@ -3294,6 +3366,7 @@ body.community-modal-open .page-content {
     .parish-agenda__timeline-item--updated .agenda-event,
     .parish-agenda__button,
     .agenda-update-notification__surface,
+    .agenda-update-notification__reveal,
     .agenda-update-notification__content,
     .agenda-update-notification__action,
     .agenda-update-notification__close,

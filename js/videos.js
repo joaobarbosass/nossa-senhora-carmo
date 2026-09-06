@@ -259,6 +259,7 @@ function keepVideoPageScrollLocked() {
 
 function closeVideoModalFromPageChrome(event) {
     if (!videoModal?.classList.contains("active")) return;
+    if (event.target.closest?.(".agenda-update-notification")) return;
     if (videoModalDialog?.contains(event.target)) return;
 
     closeVideoModal();

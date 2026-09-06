@@ -17,13 +17,21 @@ let agendaSilentUpdateInProgress = false;
 let agendaUpdateNotification = null;
 let agendaUpdateNotificationTimer = null;
 let agendaUpdateNotificationCloseTimer = null;
+let agendaUpdateNotificationContentTimer = null;
 let agendaUpdateNotificationSwipe = null;
+let agendaUpdateNotificationSuppressClick = false;
+let agendaUpdateNotificationSuppressClickTimer = null;
+let agendaUpdateNotificationDismissDelay = 0;
 const AGENDA_HOME_EVENT_LIMIT = 5;
 const AGENDA_MODAL_CLOSE_TRANSITION_DELAY = 240;
 const AGENDA_SILENT_POLL_INTERVAL = 5 * 60 * 1000;
 const AGENDA_SILENT_POLLING_ENABLED = false;
+// Modo temporário para teste visual da notificação. Manter false em produção.
+const AGENDA_UPDATE_NOTIFICATION_TEST_ENABLED = false;
+const AGENDA_UPDATE_NOTIFICATION_TEST_INTERVAL = 10000;
 const AGENDA_UPDATE_NOTIFICATION_DELAY = 9000;
-const AGENDA_UPDATE_NOTIFICATION_EXIT_DELAY = 360;
+const AGENDA_UPDATE_NOTIFICATION_EXIT_DELAY = 960;
+const AGENDA_UPDATE_NOTIFICATION_CONTENT_DELAY = 1250;
 const AGENDA_HIGHLIGHT_CLEAR_DELAY = 650;
 const AGENDA_SWIPE_START_THRESHOLD = 8;
 const AGENDA_SWIPE_DIRECTION_RATIO = 1.2;
@@ -400,6 +408,7 @@ function getAgendaUpdateNotification() {
 
     const notification = document.createElement("div");
     const surface = document.createElement("div");
+    const reveal = document.createElement("div");
     const dot = document.createElement("span");
     const content = document.createElement("div");
     const title = document.createElement("strong");
@@ -414,6 +423,7 @@ function getAgendaUpdateNotification() {
     notification.hidden = true;
 
     surface.className = "agenda-update-notification__surface";
+    reveal.className = "agenda-update-notification__reveal";
     dot.className = "agenda-update-notification__dot";
     dot.setAttribute("aria-hidden", "true");
 
@@ -439,20 +449,27 @@ function getAgendaUpdateNotification() {
 
     content.append(title, message);
     close.appendChild(closeIcon);
-    surface.append(dot, content, action, close);
+    reveal.append(dot, content, action, close);
+    surface.appendChild(reveal);
     notification.appendChild(surface);
     document.body.appendChild(notification);
 
-    action.addEventListener("click", () => {
+    action.addEventListener("click", (event) => {
+        event.stopPropagation();
         closeAgendaUpdateNotification();
         navigateToAgendaSection();
     });
 
-    close.addEventListener("click", closeAgendaUpdateNotification);
+    close.addEventListener("click", (event) => {
+        event.stopPropagation();
+        closeAgendaUpdateNotification();
+    });
     notification.addEventListener("mouseenter", clearAgendaUpdateNotificationTimer);
     notification.addEventListener("focusin", clearAgendaUpdateNotificationTimer);
     notification.addEventListener("mouseleave", scheduleAgendaUpdateNotificationDismiss);
     notification.addEventListener("focusout", scheduleAgendaUpdateNotificationDismiss);
+    surface.addEventListener("click", suppressAgendaNotificationSwipeClick, true);
+    surface.addEventListener("click", closeAgendaNotificationFromSurfaceClick);
     surface.addEventListener("pointerdown", startAgendaNotificationSwipe);
     surface.addEventListener("pointermove", moveAgendaNotificationSwipe);
     surface.addEventListener("pointerup", endAgendaNotificationSwipe);
@@ -470,9 +487,60 @@ function clearAgendaUpdateNotificationTimer() {
     agendaUpdateNotificationTimer = null;
 }
 
+function clearAgendaUpdateNotificationContentTimer() {
+    if (!agendaUpdateNotificationContentTimer) return;
+
+    clearTimeout(agendaUpdateNotificationContentTimer);
+    agendaUpdateNotificationContentTimer = null;
+}
+
 function resetAgendaNotificationSwipeStyles(surface) {
     surface?.style.removeProperty("--agenda-notification-drag-x");
     surface?.style.removeProperty("--agenda-notification-drag-opacity");
+}
+
+function clearAgendaNotificationClickSuppression() {
+    if (agendaUpdateNotificationSuppressClickTimer) {
+        clearTimeout(agendaUpdateNotificationSuppressClickTimer);
+        agendaUpdateNotificationSuppressClickTimer = null;
+    }
+
+    agendaUpdateNotificationSuppressClick = false;
+}
+
+function suppressNextAgendaNotificationClick() {
+    agendaUpdateNotificationSuppressClick = true;
+
+    if (agendaUpdateNotificationSuppressClickTimer) {
+        clearTimeout(agendaUpdateNotificationSuppressClickTimer);
+    }
+
+    agendaUpdateNotificationSuppressClickTimer = setTimeout(() => {
+        agendaUpdateNotificationSuppressClick = false;
+        agendaUpdateNotificationSuppressClickTimer = null;
+    }, 500);
+}
+
+function suppressAgendaNotificationSwipeClick(event) {
+    if (!agendaUpdateNotificationSuppressClick) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    clearAgendaNotificationClickSuppression();
+}
+
+function closeAgendaNotificationFromSurfaceClick(event) {
+    event.stopPropagation();
+
+    if (!isAgendaModalOpen()) return;
+    if (event.target.closest(".agenda-update-notification__action")) return;
+    if (event.target.closest(".agenda-update-notification__close")) return;
+
+    closeAgendaUpdateNotification();
+}
+
+function shouldReduceAgendaNotificationMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 function releaseAgendaNotificationSwipePointer(surface, pointerId) {
@@ -510,8 +578,13 @@ function finishAgendaNotificationSwipeDismiss(surface, direction) {
     const exitDistance = direction * (notificationWidth + surfaceWidth);
 
     clearAgendaUpdateNotificationTimer();
+    clearAgendaUpdateNotificationContentTimer();
     agendaUpdateNotification?.classList.add("is-swipe-dismissing");
-    agendaUpdateNotification?.classList.remove("is-dragging", "is-visible");
+    agendaUpdateNotification?.classList.remove(
+        "is-dragging",
+        "is-visible",
+        "is-content-visible",
+    );
     surface?.style.setProperty(
         "--agenda-notification-drag-x",
         `${exitDistance}px`,
@@ -531,18 +604,9 @@ function finishAgendaNotificationSwipeDismiss(surface, direction) {
     }, AGENDA_SWIPE_EXIT_DELAY);
 }
 
-function isAgendaSwipeInteractiveTarget(target) {
-    return Boolean(
-        target.closest(
-            ".agenda-update-notification__action, .agenda-update-notification__close",
-        ),
-    );
-}
-
 function startAgendaNotificationSwipe(event) {
     if (event.pointerType !== "touch") return;
     if (!agendaUpdateNotification?.classList.contains("is-visible")) return;
-    if (isAgendaSwipeInteractiveTarget(event.target)) return;
 
     clearAgendaUpdateNotificationTimer();
 
@@ -578,6 +642,7 @@ function moveAgendaNotificationSwipe(event) {
         if (absX <= absY * AGENDA_SWIPE_DIRECTION_RATIO) return;
 
         swipe.intent = "horizontal";
+        suppressNextAgendaNotificationClick();
         swipe.surface.setPointerCapture?.(event.pointerId);
         agendaUpdateNotification?.classList.add("is-dragging");
     }
@@ -651,10 +716,18 @@ function scheduleAgendaUpdateNotificationDismiss() {
 
     agendaUpdateNotificationTimer = setTimeout(() => {
         closeAgendaUpdateNotification();
-    }, AGENDA_UPDATE_NOTIFICATION_DELAY);
+    }, agendaUpdateNotificationDismissDelay || AGENDA_UPDATE_NOTIFICATION_DELAY);
 }
 
-function showAgendaUpdateNotification({ message = "", showAction = true }) {
+function showAgendaUpdateNotification({
+    title: titleText = "A agenda foi atualizada",
+    message = "",
+    showAction = true,
+    actionLabel = "Ver agenda",
+    type = "update",
+    dismissDelay = AGENDA_UPDATE_NOTIFICATION_DELAY,
+    dismissible = showAction,
+} = {}) {
     const notification = getAgendaUpdateNotification();
     const title = notification.querySelector("[data-agenda-update-title]");
     const description = notification.querySelector("[data-agenda-update-message]");
@@ -662,35 +735,54 @@ function showAgendaUpdateNotification({ message = "", showAction = true }) {
     const surface = notification.querySelector(".agenda-update-notification__surface");
 
     clearAgendaUpdateNotificationTimer();
+    clearAgendaUpdateNotificationContentTimer();
+    clearAgendaNotificationClickSuppression();
 
     if (agendaUpdateNotificationCloseTimer) {
         clearTimeout(agendaUpdateNotificationCloseTimer);
         agendaUpdateNotificationCloseTimer = null;
     }
 
-    title.textContent = "A agenda foi atualizada";
+    title.textContent = titleText;
     description.textContent = message;
     description.hidden = !message;
     action.hidden = !showAction;
+    action.textContent = actionLabel;
+    agendaUpdateNotificationDismissDelay = dismissDelay;
 
     notification.hidden = false;
     notification.classList.remove(
+        "agenda-update-notification--update",
         "is-visible",
+        "is-content-visible",
         "is-hiding",
         "is-dismissible",
         "is-dragging",
         "is-swipe-returning",
         "is-swipe-dismissing",
     );
+    notification.classList.add(`agenda-update-notification--${type}`);
+    notification.dataset.agendaNotificationType = type;
     resetAgendaNotificationSwipeStyles(surface);
 
-    if (showAction) {
+    if (dismissible) {
         notification.classList.add("is-dismissible");
     }
 
+    surface.offsetWidth;
+
     requestAnimationFrame(() => {
         notification.classList.add("is-visible");
-        scheduleAgendaUpdateNotificationDismiss();
+
+        const contentDelay = shouldReduceAgendaNotificationMotion()
+            ? 40
+            : AGENDA_UPDATE_NOTIFICATION_CONTENT_DELAY;
+
+        agendaUpdateNotificationContentTimer = setTimeout(() => {
+            notification.classList.add("is-content-visible");
+            agendaUpdateNotificationContentTimer = null;
+            scheduleAgendaUpdateNotificationDismiss();
+        }, contentDelay);
     });
 }
 
@@ -702,15 +794,22 @@ function closeAgendaUpdateNotification() {
     );
 
     agendaUpdateNotificationSwipe = null;
+    clearAgendaNotificationClickSuppression();
     clearAgendaUpdateNotificationTimer();
+    clearAgendaUpdateNotificationContentTimer();
     agendaUpdateNotification.classList.add("is-hiding");
     agendaUpdateNotification.classList.remove(
         "is-visible",
+        "is-content-visible",
         "is-dragging",
         "is-swipe-returning",
         "is-swipe-dismissing",
     );
     resetAgendaNotificationSwipeStyles(surface);
+
+    const closeDelay = shouldReduceAgendaNotificationMotion()
+        ? 140
+        : AGENDA_UPDATE_NOTIFICATION_EXIT_DELAY;
 
     agendaUpdateNotificationCloseTimer = setTimeout(() => {
         if (!agendaUpdateNotification) return;
@@ -718,7 +817,7 @@ function closeAgendaUpdateNotification() {
         agendaUpdateNotification.hidden = true;
         agendaUpdateNotification.classList.remove("is-hiding", "is-dismissible");
         agendaUpdateNotificationCloseTimer = null;
-    }, AGENDA_UPDATE_NOTIFICATION_EXIT_DELAY);
+    }, closeDelay);
 }
 
 function navigateToAgendaSection() {
@@ -1059,6 +1158,37 @@ function startAgendaSilentPolling() {
     }, AGENDA_SILENT_POLL_INTERVAL);
 }
 
+function isAgendaUpdateNotificationBusy() {
+    return Boolean(
+        agendaUpdateNotification &&
+            !agendaUpdateNotification.hidden &&
+            (agendaUpdateNotification.classList.contains("is-visible") ||
+                agendaUpdateNotification.classList.contains("is-hiding") ||
+                agendaUpdateNotification.classList.contains("is-dragging") ||
+                agendaUpdateNotification.classList.contains("is-swipe-returning") ||
+                agendaUpdateNotification.classList.contains("is-swipe-dismissing")),
+    );
+}
+
+function showAgendaUpdateNotificationTest() {
+    if (isAgendaUpdateNotificationBusy()) return;
+
+    showAgendaUpdateNotification({
+        message: isAgendaModalOpen()
+            ? "Feche esta janela para visualizar as alterações."
+            : "",
+        showAction: !isAgendaModalOpen(),
+    });
+}
+
+function startAgendaUpdateNotificationTest() {
+    if (!AGENDA_UPDATE_NOTIFICATION_TEST_ENABLED) return;
+
+    setInterval(() => {
+        showAgendaUpdateNotificationTest();
+    }, AGENDA_UPDATE_NOTIFICATION_TEST_INTERVAL);
+}
+
 function unlockAgendaModalScroll() {
     const scrollY = agendaModalLockedScrollY;
 
@@ -1138,6 +1268,7 @@ function keepAgendaPageScrollLocked() {
 
 function closeAgendaModalFromPageChrome(event) {
     if (!agendaModal?.classList.contains("active")) return;
+    if (event.target.closest?.(".agenda-update-notification")) return;
     if (agendaModal?.contains(event.target)) return;
 
     closeAgendaModal();
@@ -1298,3 +1429,4 @@ document.addEventListener("keydown", (event) => {
 
 renderAgenda();
 startAgendaSilentPolling();
+startAgendaUpdateNotificationTest();
