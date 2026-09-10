@@ -10,6 +10,18 @@ function revealImpossibleMassSection() {
     impossibleMassSection?.classList.add("is-visible");
 }
 
+function revealImpossibleMassSectionImmediately() {
+    if (typeof window.revealEntryImmediately !== "function") {
+        revealImpossibleMassSection();
+        return;
+    }
+
+    window.revealEntryImmediately(
+        impossibleMassSection,
+        revealImpossibleMassSection,
+    );
+}
+
 function setupImpossibleMassLocation() {
     const locationUrl = matrizCommunity?.googleMaps || matrizCommunity?.waze;
 
@@ -29,16 +41,32 @@ if (impossibleMassSection) {
     if (shouldReduceMotion || !("IntersectionObserver" in window)) {
         revealImpossibleMassSection();
     } else {
-        const impossibleMassObserver = new IntersectionObserver(
-            ([entry], observer) => {
-                if (!entry.isIntersecting) return;
+        const setupImpossibleMassObserver = () => {
+            if (
+                typeof window.shouldRevealEntryImmediately === "function" &&
+                window.shouldRevealEntryImmediately(impossibleMassSection)
+            ) {
+                revealImpossibleMassSectionImmediately();
+                return;
+            }
 
-                revealImpossibleMassSection();
-                observer.disconnect();
-            },
-            { threshold: 0.32 },
-        );
+            const impossibleMassObserver = new IntersectionObserver(
+                ([entry], observer) => {
+                    if (!entry.isIntersecting) return;
 
-        impossibleMassObserver.observe(impossibleMassSection);
+                    revealImpossibleMassSection();
+                    observer.disconnect();
+                },
+                { threshold: 0.32 },
+            );
+
+            impossibleMassObserver.observe(impossibleMassSection);
+        };
+
+        if (typeof window.whenInitialRevealReady === "function") {
+            window.whenInitialRevealReady(setupImpossibleMassObserver);
+        } else {
+            setupImpossibleMassObserver();
+        }
     }
 }

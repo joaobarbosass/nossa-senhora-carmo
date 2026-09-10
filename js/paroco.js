@@ -104,19 +104,37 @@ function setupPriestCounter() {
         return;
     }
 
-    setMissionDays(0);
+    const setupPriestCounterObserver = () => {
+        if (
+            typeof window.shouldRevealEntryImmediately === "function" &&
+            (window.shouldRevealEntryImmediately(priestSection) ||
+                window.shouldRevealEntryImmediately(priestDays))
+        ) {
+            priestCounterAnimated = true;
+            setMissionDays(finalValue);
+            return;
+        }
 
-    const observer = new IntersectionObserver(
-        ([entry], currentObserver) => {
-            if (!entry.isIntersecting) return;
+        setMissionDays(0);
 
-            revealPriestCounter();
-            currentObserver.disconnect();
-        },
-        { threshold: 0.35 },
-    );
+        const observer = new IntersectionObserver(
+            ([entry], currentObserver) => {
+                if (!entry.isIntersecting) return;
 
-    observer.observe(priestDays);
+                revealPriestCounter();
+                currentObserver.disconnect();
+            },
+            { threshold: 0.35 },
+        );
+
+        observer.observe(priestDays);
+    };
+
+    if (typeof window.whenInitialRevealReady === "function") {
+        window.whenInitialRevealReady(setupPriestCounterObserver);
+    } else {
+        setupPriestCounterObserver();
+    }
 }
 
 function lockPriestModalScroll() {
