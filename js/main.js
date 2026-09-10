@@ -3,8 +3,6 @@ const tapFeedbackSelector = [
     ".hero-carousel__button",
     ".comunidade-card",
     ".live-section__link",
-    ".parish-agenda__button",
-    ".agenda-modal__close",
     ".stained-glass-card",
     ".parish-video-card",
     ".parish-video-card__button",

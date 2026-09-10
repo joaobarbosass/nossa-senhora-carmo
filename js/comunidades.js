@@ -288,7 +288,6 @@ function keepCommunityPageScrollLocked() {
 
 function closeCommunityModalFromPageChrome(event) {
     if (!communityModal?.classList.contains("active")) return;
-    if (event.target.closest?.(".agenda-update-notification")) return;
     if (communityModalDialog?.contains(event.target)) return;
 
     closeModal();
