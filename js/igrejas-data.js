@@ -98,8 +98,10 @@ window.igrejasComunidades = [
         ],
         confissoes: [],
         celebracoesEspeciais: [],
-        endereco: "",
-        googleMaps: "",
+        endereco:
+            "R. Carlos Teodoro Stein, 2-124 - Batuque Novo, Monte Carmelo/MG",
+        googleMaps:
+            "https://www.google.com/maps/search/?api=1&query=Igreja+Menino+Jesus%2C+R.+Carlos+Teodoro+Stein%2C+2-124%2C+Batuque+Novo%2C+Monte+Carmelo+-+MG",
         waze: "",
     },
     {
@@ -125,8 +127,10 @@ window.igrejasComunidades = [
         ],
         confissoes: [],
         celebracoesEspeciais: [],
-        endereco: "",
-        googleMaps: "",
+        endereco:
+            "Praça Nossa Senhora do Carmo, 10 - Centro, Monte Carmelo/MG - Abaixo da Igreja Matriz",
+        googleMaps:
+            "https://www.google.com/maps/search/?api=1&query=Par%C3%B3quia+Nossa+Senhora+do+Carmo%2C+Pra%C3%A7a+Nossa+Senhora+do+Carmo%2C+10%2C+Monte+Carmelo+-+MG",
         waze: "",
     },
     {
@@ -157,8 +161,9 @@ window.igrejasComunidades = [
         ],
         confissoes: [],
         celebracoesEspeciais: [],
-        endereco: "",
-        googleMaps: "",
+        endereco: "R. Nove, 225 - Jardim Zeni, Monte Carmelo/MG",
+        googleMaps:
+            "https://www.google.com/maps/search/?api=1&query=Capela+da+Medalha+Milagrosa%2C+Monte+Carmelo+-+MG",
         waze: "",
     },
 ];
